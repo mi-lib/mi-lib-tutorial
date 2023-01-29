@@ -1,0 +1,192 @@
+[robot]
+name: super_robot
+
+[optic]
+name: cyan
+ambient: 0.5, 0.5, 0.5
+diffuse: #64c8ff
+specular: 0, 0, 0
+
+[optic]
+name: yellow
+ambient: 0.5, 0.5, 0.5
+diffuse: #ffff96
+specular: 0, 0, 0
+
+[optic]
+name: blue
+ambient: 0.5, 0.5, 0.5
+diffuse: #6400ff
+specular: 0, 0, 0
+
+[optic]
+name: pink
+ambient: 0.5, 0.5, 0.5
+diffuse: #ff96ff
+specular: 0, 0, 0
+
+[shape]
+name: torso
+type: box
+optic: cyan
+center: ( 0, 0, -0.05 )
+width: 0.2
+height: 0.2
+depth: 0.15
+
+[shape]
+name: chest_plate
+type: box
+optic: yellow
+center: ( 0.075, 0, 0 )
+width: 0.15
+height: 0.1
+depth: 0.05
+
+[shape]
+name: crotch
+type: box
+optic: yellow
+center: ( 0, 0, -0.15 )
+width: 0.05
+height: 0.15
+depth: 0.1
+
+[shape]
+name: neck
+type: cylinder
+optic: cyan
+center: ( 0, 0, 0.05 )
+center: ( 0, 0, 0.1 )
+radius: 0.025
+
+[shape]
+name: head
+type: box
+optic: cyan
+center: ( 0, 0, 0 )
+width: 0.2
+height: 0.15
+depth: 0.2
+
+[shape]
+name: left_eye
+type: cylinder
+optic: yellow
+center: ( 0.125, 0.05, 0 )
+center: ( 0.1, 0.05, 0 )
+radius: 0.025
+
+[shape]
+name: right_eye
+type: cylinder
+optic: yellow
+center: ( 0.125, -0.05, 0 )
+center: ( 0.1, -0.05, 0 )
+radius: 0.05
+
+[shape]
+name: left_ear
+type: cone
+optic: pink
+center: ( 0, 0.1, 0 )
+vert: ( 0, 0.125, 0 )
+radius: 0.05
+
+[shape]
+name: right_ear
+type: cone
+optic: pink
+center: ( 0, -0.1, 0 )
+vert: ( 0, -0.125, 0 )
+radius: 0.05
+
+[shape]
+name: arm
+type: box
+optic: cyan
+center: ( 0, -0.05, 0 )
+width: 0.2
+height: 0.05
+depth: 0.05
+
+[shape]
+name: hand
+type: sphere
+optic: blue
+center: ( 0, -0.175, 0 )
+radius: 0.025
+
+[shape]
+name: leg
+type: box
+optic: cyan
+center: ( 0, -0.075, 0 )
+width: 0.2
+height: 0.05
+depth: 0.075
+
+[shape]
+name: foot
+type: box
+optic: blue
+center: ( 0.025, -0.175, 0 )
+width: 0.05
+height: 0.05
+depth: 0.15
+
+[link]
+name: body
+jointtype: float
+shape: torso, chest_plate, crotch, neck
+
+[link]
+name: head
+parent: body
+jointtype: revolute
+pos: ( 0, 0, 0.15 )
+shape: head, left_eye, right_eye, left_ear, right_ear
+
+[link]
+name: left_arm
+parent: body
+jointtype: revolute
+pos: ( 0, 0.15, 0 )
+att:
+ 1, 0, 0,
+ 0, 0,-1,
+ 0, 1, 0,
+shape: arm, hand
+
+[link]
+name: right_arm
+parent: body
+jointtype: revolute
+pos: ( 0, -0.15, 0 )
+att:
+ 1, 0, 0,
+ 0, 0,-1,
+ 0, 1, 0,
+shape: arm, hand
+
+[link]
+name: left_leg
+parent: body
+jointtype: revolute
+pos: ( 0, 0.05, -0.2 )
+att:
+ 1, 0, 0,
+ 0, 0,-1,
+ 0, 1, 0,
+shape: leg, foot
+
+[link]
+name: right_leg
+parent: body
+jointtype: revolute
+pos: ( 0, -0.05, -0.2 )
+att:
+ 1, 0, 0,
+ 0, 0,-1,
+ 0, 1, 0,
+shape: leg, foot
