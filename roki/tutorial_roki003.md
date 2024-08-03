@@ -135,9 +135,9 @@ int main(int argc, char *argv[])
 `set_joint_angle()`という関数の中で、
 ```math
 \displaylines{
-q_1 = \pi/4 \sin 2\pi t/T \\
-q_2 = \pi/6 \sin 4\pi t/T \\
-q_3 = \pi/3 \sin 4\pi t/T - \pi/2 \\
+q_1 &= \pi/4 \sin 2\pi t/T \\
+q_2 &= \pi/6 \sin 4\pi t/T \\
+q_3 &= \pi/3 \sin 4\pi t/T - \pi/2 \\
 }
 ```
 のように時刻tの関数としてそれぞれの関節角度を決めています。
@@ -179,12 +179,12 @@ rk\_animを使って動きを見てみましょう。
 関節角度は時刻の関数として与えたので、これらを時間に関して微分すれば、関節角速度・関節角加速度が分かります。
 ```math
 \displaylines{
-dq_1/dt = 2\pi/T・\pi/4 \cos 2\pi t/T \\
-dq_2/dt = 4\pi/T・\pi/6 \cos 4\pi t/T \\
-dq_3/dt = 4\pi/T・\pi/3 \cos 4\pi t/T \\
-d^2q_1/dt^2 =-(2\pi/T)^2・\pi/4 \sin 2\pi t/T \\
-d^2q_2/dt^2 =-(4\pi/T)^2・\pi/6 \sin 4\pi t/T \\
-d^2q_3/dt^2 =-(4\pi/T)^2・\pi/3 \sin 4\pi t/T \\
+dq_1/dt &= 2\pi/T・\pi/4 \cos 2\pi t/T \\
+dq_2/dt &= 4\pi/T・\pi/6 \cos 4\pi t/T \\
+dq_3/dt &= 4\pi/T・\pi/3 \cos 4\pi t/T \\
+d^2q_1/dt^2 &=-(2\pi/T)^2・\pi/4 \sin 2\pi t/T \\
+d^2q_2/dt^2 &=-(4\pi/T)^2・\pi/6 \sin 4\pi t/T \\
+d^2q_3/dt^2 &=-(4\pi/T)^2・\pi/3 \sin 4\pi t/T \\
 }
 ```
 これに基づいて、次のように関節角速度ベクトル・関節角加速度ベクトルも作るよう`set_joint_angle()`関数を修正しましょう。
