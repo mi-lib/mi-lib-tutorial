@@ -141,7 +141,7 @@ q_3 &= \pi/3 \sin 4\pi t/T - \pi/2 \\
 }
 ```
 のように時刻tの関数としてそれぞれの関節角度を決めています。
-ただし$T=3.0$sです。
+ただしT=3.0sです。
 なお、`zPIx2`は2π、`zPI_2`はπ/2をそれぞれ与えるマクロです。
 
 これをコンパイル・実行すると`test.zvs`というファイルが出来ます。
@@ -348,6 +348,44 @@ int main(int argc, char *argv[])
 <img width=1024 alt="PUMA順運動学テスト動作の手先加速度（近似値との比較）" src="fig/puma_armswing_acc.png">
 
 それほど大きく外れていないことが分かります。
+
+もともとの「どれくらいの速度・加速度で動いているのか？」に答えるために、`main()`関数をさらに次のように変えましょう。
+```C
+int main(int argc, char *argv[])
+{
+  rkChain robot;
+  zVec q, dq, ddq;
+  int i;
+
+  if( !rkChainReadZTK( &robot, "puma" ) ||
+      !( q = zVecAlloc( rkChainJointSize(&robot) ) ) ||
+      !( dq = zVecAlloc( rkChainJointSize(&robot) ) ) ||
+      !( ddq = zVecAlloc( rkChainJointSize(&robot) ) ) )
+    return EXIT_FAILURE;
+
+  for( i=0; i<STEP; i++ ){
+    set_joint_angle( q, dq, ddq, T*(double)i/STEP );
+    rkChainSetJointDisAll( &robot, q );
+    rkChainSetJointVelAll( &robot, dq );
+    rkChainSetJointAccAll( &robot, ddq );
+    rkChainUpdateFK( &robot );
+    rkChainUpdateRate0G( &robot );
+    printf( "%g %g\n", zVec3DNorm( rkChainLinkLinVel(&robot,6) ), zVec3DNorm( rkChainLinkLinAcc(&robot,6) ) );
+  }
+  zVecFreeAO( 3, q, dq, ddq );
+  rkChainDestroy( &robot );
+  return EXIT_SUCCESS;
+}
+```
+`zVec3DNorm()`は、3次元ベクトルのノルムを求めるZeoのライブラリ関数です。
+速度・加速度のノルムだけを考えているので、方向を世界座標系に変換する必要が無いことにご注意下さい。
+結果をグラフにプロットすると、次のようになります。
+
+<img width=640 alt="PUMA順運動学テスト動作の手先速度・加速度の大きさ" src="fig/puma_armswing_vel_acc_abs.png">
+
+緑線が速度のノルム、黄色線が加速度のノルムです。
+前者の最大値は1.8m/s≒6.5km/h程度、後者の最大値は1G≒9.8m/s^2程度であることが見て取れます。
+
 
 # 簡易版速度・加速度解析
 
