@@ -3,7 +3,7 @@ mi-libチュートリアル: インストール
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.01.17. 作成 Zhidao
- - 2023.01.27. 最終更新 Zhidao
+ - 2024.08.01. 最終更新 Zhidao
  
 ----------------------------------------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ debianパッケージとしてインストールした場合には
 
 ## コンパイルに必要なツール
 
-上記インストールスクリプトではwget、unzip、rename、fakerootを使っています。
+上記インストールスクリプトではwget、unzip、rename、fakeroot、pkg-config を使っています。
 手動で個別インストールされる場合にはこれらは必要ありません。
 
 コンパイルにはmakeが必要です。
@@ -74,10 +74,12 @@ mi-libは幾つかのサードパーティ製ライブラリを使用します�
    - libm
    - \*libxml2
  - RoKi-GL
-   - OpenGL (GL, GLU, \*GLX, \*glut)
+   - OpenGL (GL, GLU, \*GLX, \*GLUT, \*GLFW, \*GLEW)
  - RoKi-FD
  - ZX11
-   - x.org (X11, Xpm, Xext)
+   - x.org (libX11, libXpm, libXext)
+   - \*Xfg (libxft, fontconfig, libfreetype)
+   - \*ImageMagick (MagickCore, MagickWand)
    - \*libjpeg
    - \*libpng, libz
    - \*libtiff
@@ -85,7 +87,7 @@ mi-libは幾つかのサードパーティ製ライブラリを使用します�
    - librt, libdl, libpthread
 
 libm、librt, libdl, libpthreadは、gccをご使用ならば既にインストールされているはずです。
-左にマークが付いているライブラリは必須ではありません。
+左に\*マークが付いているライブラリは必須ではありません。
 それぞれ利用するライブラリの中にあるconfigファイルで使用/不使用を設定できます。
 ただし、ZX11でlibpngを使う場合にはlibzは必須になります。
 
@@ -111,6 +113,13 @@ nに変えて下さい。
 ```
 とすればdebianパッケージが作成されます。dpkgでインストールして下さい。
 この場合は`PREFIX`は無視され、/usr/がインストール先になります。
+
+コンパイラとコンパイル規格は変更できます。たとえば次のようにすれば、C++用のライブラリと
+してC++17準拠でライブラリ lib*_cpp.so がビルドされます。
+
+```sh
+% make CC=g++ STD=c++17
+```
 
 ## 環境変数の設定
 

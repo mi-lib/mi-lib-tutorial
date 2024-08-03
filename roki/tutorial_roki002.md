@@ -3,13 +3,13 @@ RoKiチュートリアル: ロボットモデルをプログラムで使おう
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.01.17. 作成 Zhidao
- - 2023.01.29. 最終更新 Zhidao
+ - 2023.03.12. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
 # Cプログラムでのロボットモデルファイル読み込み
 
-[前回](../roki001/tutorial_roki001.md)作成したスーパーロボット君のモデルファイル[super_robot.ztk](super_robot.ztk)を使ったプログラムの書き方を見ていきます。
+[前回](tutorial_roki001.md)作成したスーパーロボット君のモデルファイル[super_robot.ztk](super_robot.ztk)を使ったプログラムの書き方を見ていきます。
 まずは次のようなCプログラムを作りましょう。
 ```C
 #include <roki/roki.h>
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   double dis;
 
   rkChainReadZTK( &robot, "super_robot.ztk" );
-  zVec3DCreate( &hand_local, 0, -0.175, 0 ); /* right hand position in the iink frame */
+  zVec3DCreate( &hand_local, 0, -0.175, 0 ); /* right hand position in the link frame */
   l = rkChainFindLink( &robot, "right_arm" );
 
   printf( "center of rotation\n" );
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 処理の意味を一つひとつ説明していきます。
 まず、`right_arm`リンク座標系における右手の位置ベクトルを`hand_local`としています。
 ```C
-  zVec3DCreate( &hand_local, 0, -0.175, 0 ); /* right hand position in the iink frame */
+  zVec3DCreate( &hand_local, 0, -0.175, 0 ); /* right hand position in the link frame */
 ```
 次に、`right_arm`リンクへのポインタを取得しています。
 ```C
@@ -144,9 +144,7 @@ after rotation
 関節を90°上に回転させれば右手先位置は( 0.175, -0.15, 0 )になるはずです。
 上記の結果と（ラジアン変換の影響で微小な誤差が乗っていますが）合っています。
 
-なお、上記プログラム中で出てきた
-3次元ベクトル構造体`zVec3D`はZeoで、
-`zDeg2Rad()`はZMでそれぞれ定義されています。
+なお、上記プログラム中で出てきた3次元ベクトル構造体`zVec3D`はZeoで、`zDeg2Rad()`はZMで、それぞれ定義されています。
 
 全く同じ動作をするプログラムは、次のようにも書けます。
 ```C
@@ -301,7 +299,7 @@ int main(int argc, char *argv[])
 として、ロボットの関節変位ベクトルを用意します。
 `rkChainJointSize()`はロボットの関節変位ベクトルのサイズを自動計算する関数です。
 上で説明した通り、super\_robotならば11になるはずです。
-なお、`zVec`はZMで定義されています。
+なお、`zVec`はZMで定義されています。`zVecAlloc()`はZMのライブラリ関数です。
 
 次に
 ```C
@@ -379,6 +377,8 @@ void output(rkChain *robot)
   zVecFree( dis );
   rkChainDestroy( &robot );
 ```
+`zVecFree()`もZMのライブラリ関数です。
+
 プログラムを実行してみて下さい。次のような出力が得られたでしょうか。
 ```
 (before rotation)
