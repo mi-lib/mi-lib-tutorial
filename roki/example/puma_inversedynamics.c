@@ -24,25 +24,25 @@ void set_joint_angle(zVec q, zVec dq, zVec ddq, double t)
 int main(int argc, char *argv[])
 {
   rkChain robot;
-  zVec q, dq, ddq;
+  zVec q, dq, ddq, trq;
   int i;
+  double t;
 
   if( !rkChainReadZTK( &robot, "puma" ) ||
       !( q = zVecAlloc( rkChainJointSize(&robot) ) ) ||
       !( dq = zVecAlloc( rkChainJointSize(&robot) ) ) ||
-      !( ddq = zVecAlloc( rkChainJointSize(&robot) ) ) )
+      !( ddq = zVecAlloc( rkChainJointSize(&robot) ) ) ||
+      !( trq = zVecAlloc( rkChainJointSize(&robot) ) ) )
     return EXIT_FAILURE;
 
   for( i=0; i<STEP; i++ ){
-    set_joint_angle( q, dq, ddq, T*(double)i/STEP );
-    rkChainSetJointDisAll( &robot, q );
-    rkChainSetJointVelAll( &robot, dq );
-    rkChainSetJointAccAll( &robot, ddq );
-    rkChainUpdateFK( &robot );
-    rkChainUpdateRate0G( &robot );
-    printf( "%g %g\n", zVec3DNorm( rkChainLinkLinVel(&robot,6) ), zVec3DNorm( rkChainLinkLinAcc(&robot,6) ) );
+    set_joint_angle( q, dq, ddq, ( t = T*(double)i/STEP ) );
+    rkChainFK( &robot, q );
+    rkChainID( &robot, dq, ddq );
+    rkChainGetJointTrqAll( &robot, trq );
+    printf( "%g %g %g %g %g %g %g %g %g %g\n", t, zVecElem(q,0), zVecElem(q,1), zVecElem(q,2), zVecElem(dq,0), zVecElem(dq,1), zVecElem(dq,2), zVecElem(trq,0), zVecElem(trq,1), zVecElem(trq,2) );
   }
-  zVecFreeAtOnce( 3, q, dq, ddq );
+  zVecFreeAtOnce( 4, q, dq, ddq, trq );
   rkChainDestroy( &robot );
   return EXIT_SUCCESS;
 }

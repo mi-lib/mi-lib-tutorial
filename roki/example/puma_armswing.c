@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     zEndl();
   }
   fclose( fp );
-  zVecFreeAO( 3, q, dq, ddq );
+  zVecFreeAtOnce( 3, q, dq, ddq );
   rkChainDestroy( &robot );
   return EXIT_SUCCESS;
 }

@@ -1,9 +1,9 @@
-RoKiチュートリアル: ロボットアームの速度・加速度解析
+RoKiチュートリアル: ロボットアームの速度・加速度計算
 ====================================================================================================
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.02.13. 作成 Zhidao
- - 2024.08.03. 最終更新 Zhidao
+ - 2024.08.06. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ Chain : PUMA
  - リンク2の名前は `link2` で、回転関節で `link1` に連結されています。関節ベクトルが与えられたとき、その要素1がこの関節に対応する先頭成分です。
  - ...
 
-[ロボットモデルを作ろう](tutorial_roki001.md)ですでに試した通り、-boneオプションをつけてrk\_penを起ち上げると、ロボットの関節配置を見ることが出来ます。
+「[ロボットモデルを作ろう](tutorial_roki001.md)」ですでに試した通り、-boneオプションをつけてrk\_penを起ち上げると、ロボットの関節配置を見ることが出来ます。
 ```sh
 % rk_pen example/model/puma.ztk -x 2 -y -- -1.9 -z 2.1 -pan -- -45 -tilt -- -35 -bone
 ```
@@ -140,9 +140,10 @@ q_2 &= \pi/6 \sin 4\pi t/T \\
 q_3 &= \pi/3 \sin 4\pi t/T - \pi/2 \\
 }
 ```
-のように時刻tの関数としてそれぞれの関節角度を決めています。
+のように時刻tの関数としてそれぞれの関節角度を決め、関節変位ベクトル`q`を作成しています。
 ただしT=3.0sです。
 なお、`zPIx2`は2π、`zPI_2`はπ/2をそれぞれ与えるマクロです。
+手首3関節の角度はプログラム中で陽に与えていませんが、`zVecAlloc()`関数でベクトルを作成すると全成分0で初期化されますので、0を保ちます。
 
 これをコンパイル・実行すると`test.zvs`というファイルが出来ます。
 rk\_animを使って動きを見てみましょう。
@@ -242,7 +243,7 @@ int main(int argc, char *argv[])
     zEndl();
   }
   fclose( fp );
-  zVecFreeAO( 3, q, dq, ddq );
+  zVecFreeAtOnce( 3, q, dq, ddq );
   rkChainDestroy( &robot );
   return EXIT_SUCCESS;
 }
@@ -277,7 +278,7 @@ int main(int argc, char *argv[])
 世界座標系から見た方向に直すには、`zMulMat3DVec3D()`関数を用いてリンク座標系の姿勢行列`rkChainLinkWldAtt()`を掛けてやる必要があります。
 なお、`zMulMat3DVec3D()`はZeoのライブラリ関数です。
 
-最後の`zVecFreeAO()`は、複数の`zVec`インスタンスをいっぺんに破棄する、ZMのライブラリ関数です。
+最後の`zVecFreeAtOnce()`は、複数の`zVec`インスタンスをいっぺんに破棄する、ZMのライブラリ関数です。
 
 上記プログラムをコンパイル・実行すると、毎ステップのlink6位置x, y, z成分、速度x, y, z成分、加速度x, y, z成分が標準出力に出力されます。
 先程と同様に、適当なファイルにリダイレクトして適当な3次元プロットツールで表示してみましょう。
@@ -334,7 +335,7 @@ int main(int argc, char *argv[])
     zEndl();
   }
   fclose( fp );
-  zVecFreeAO( 3, q, dq, ddq );
+  zVecFreeAtOnce( 3, q, dq, ddq );
   rkChainDestroy( &robot );
   return EXIT_SUCCESS;
 }
@@ -372,7 +373,7 @@ int main(int argc, char *argv[])
     rkChainUpdateRate0G( &robot );
     printf( "%g %g\n", zVec3DNorm( rkChainLinkLinVel(&robot,6) ), zVec3DNorm( rkChainLinkLinAcc(&robot,6) ) );
   }
-  zVecFreeAO( 3, q, dq, ddq );
+  zVecFreeAtOnce( 3, q, dq, ddq );
   rkChainDestroy( &robot );
   return EXIT_SUCCESS;
 }
