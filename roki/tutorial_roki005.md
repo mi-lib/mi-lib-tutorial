@@ -13,12 +13,12 @@ Copyright (C) Tomomichi Sugihara (Zhidao)
 ロボットに作業をさせたい、つまり何か意味のある働きかけをさせたいときは、最初にエフェクタをどう振舞わせるべきかという目標運動を考え、そこから逆に関節の目標運動を求める、という上記の機序と逆方向の問題を解くことになります。
 これは**逆運動学**と呼ばれます。
 
-数学的には、関節変位ベクトルを$\boldsymbol{q}$、エフェクタの変位を$\boldsymbol{p}$とおくと、$\boldsymbol{p}$は$\boldsymbol{q}$の写像となります。
+数学的には、関節変位ベクトルを$`\boldsymbol{q}`$、エフェクタの変位を$`\boldsymbol{p}`$とおくと、$`\boldsymbol{p}`$は$`\boldsymbol{q}`$の写像となります。
 ```math
 \boldsymbol{p}=\boldsymbol{f}(\boldsymbol{q})
 ```
 これは[順運動学](tutorial_roki002.md)にほかなりません。
-逆運動学とは$\boldsymbol{f}$の逆写像を計算することにほかなりませんが、ここには次の難しさがあります。
+逆運動学とは$`\boldsymbol{f}`$の逆写像を計算することにほかなりませんが、ここには次の難しさがあります。
 
  1. 解がそもそも存在するとは限らない
  1. 解が無数に存在することがある
@@ -29,8 +29,8 @@ Copyright (C) Tomomichi Sugihara (Zhidao)
 
 **1. 解がそもそも存在するとは限らない**
 
-全関節をそれぞれの可動範囲の中で任意に動かしたときの関節変位ベクトル$boldsymbol$\boldsymbol{q}$の集合を、$\mathcal{Q}$とおきましょう。
-このとき、$\mathcal{Q}$に対応してエフェクタがとり得る変位の集合$\mathcal{P}$を次のように定義できます。
+全関節をそれぞれの可動範囲の中で任意に動かしたときの関節変位ベクトル$`\boldsymbol{q}`$の集合を、$`\mathcal{Q}`$とおきましょう。
+このとき、$`\mathcal{Q}`$に対応してエフェクタがとり得る変位の集合$`\mathcal{P}`$を次のように定義できます。
 ```math
 \mathcal{P}=\left\{
 \boldsymbol{p}\left|
@@ -38,14 +38,14 @@ Copyright (C) Tomomichi Sugihara (Zhidao)
 \right.
 \right\}
 ```
-$\mathcal{P}$を**作業空間**と呼びます。
+$`\mathcal{P}`$を**作業空間**と呼びます。
 
-目標とするエフェクタ変位${}^{d}\boldsymbol{p}$が作業空間$\mathcal{P}$に含まれていない場合、典型的にはロボットの手先が届かないほど離れた場所に目標が設定された場合は、それを実現する関節変位は存在しません。
+目標とするエフェクタ変位$`{}^{d}\boldsymbol{p}`$が作業空間$`\mathcal{P}`$に含まれていない場合、典型的にはロボットの手先が届かないほど離れた場所に目標が設定された場合は、それを実現する関節変位は存在しません。
 
 **2. 解が無数に存在することがある**
 
-一般的に、$\boldsymbol{p}$の次元と$\boldsymbol{q}$の次元は等しいとは限りません。
-前者よりも後者の方が大きい場合、${}^{d}\boldsymbol{p}$が$\mathcal{P}$に含まれているならば、それを実現する$\boldsymbol{q}$は一般的には無数に存在します。
+一般的に、$`\boldsymbol{p}`$の次元と$`\boldsymbol{q}`$の次元は等しいとは限りません。
+前者よりも後者の方が大きい場合、$`{}^{d}\boldsymbol{p}`$が$`\mathcal{P}`$に含まれているならば、それを実現する$`\boldsymbol{q}`$は一般的には無数に存在します。
 このような状況は「**冗長**である」と言います。
 
 **3. 解が有限個であったとしても、一意に存在するとは限らない**
@@ -62,10 +62,10 @@ $\mathcal{P}$を**作業空間**と呼びます。
 RoKiでは、一般性の高い逆運動学の解法としてLevenberg-Marquardt法による数値解法を実装しています。
 これは、直接解を求める替わりに、次の最小二乗問題を反復解法で解くものです。
 ```math
-\boldmath{q}={\mathop{\mathrm{arg~min}}_{\boldsymbol{q}}\left\{\frac{1}{2}\boldsymbol{e}^{\mathrm{T}}(\boldmath{q})\boldsymbol{W}_{\mahrm{E}}\boldsymbol{e}(\boldmath{q})\right\}
+\boldmath{q}=\mathop{\mathrm{arg~min}}_{\boldsymbol{q}}\left\{\frac{1}{2}\boldsymbol{e}^{\mathrm{T}}(\boldmath{q})\boldsymbol{W}_{\mahrm{E}}\boldsymbol{e}(\boldmath{q})\right\}
 ```
-ただし、$\boldsymbol{e}(\boldmath{q})$はエフェクタ変位の目標からの残差、$\boldsymbol{W}_{\mahrm{E}}$は$\boldsymbol{e}(\boldmath{q})$の各成分にかけられる重みです。
-このようにすることで、厳密に$\boldsymbol{e}(\boldmath{q})=\boldsymbol{0}$とする解が存在しない場合は、エフェクタ変位の目標からの残差を最小化する姿勢をもって解の代わりにします。
+ただし、$`\boldsymbol{e}(\boldmath{q})`$はエフェクタ変位の目標からの残差、$`\boldsymbol{W}_{\mahrm{E}}`$は$`\boldsymbol{e}(\boldmath{q})`$の各成分にかけられる重みです。
+このようにすることで、厳密に$`\boldsymbol{e}(\boldmath{q})=\boldsymbol{0}`$とする解が存在しない場合は、エフェクタ変位の目標からの残差を最小化する姿勢をもって解の代わりにします。
 
 なお、毎回の反復計算では次の最小化問題を解いています。
 ```math
@@ -75,7 +75,7 @@ RoKiでは、一般性の高い逆運動学の解法としてLevenberg-Marquardt
 \frac{1}{2}\varDelta\boldsymbol{q}^{\mathrm{T}}\boldsymbol{W}_{\mathrm{N}}\varDelta\boldsymbol{q}
 \right\}
 ```
-ただし、$\varDelta\boldsymbol{q}$は毎回の反復での関節変位ベクトルの修正量、$\boldsymbol{J}$は$\boldsymbol{e}(\boldmath{q})$の勾配$\partial\boldsymbol{e}(\boldmath{q})/\partial\boldsymbol{q}$、$\boldsymbol{W}_{\mathrm{N}}$は関節変位ベクトル修正量の各成分への重みです。
+ただし、$`\varDelta\boldsymbol{q}`$は毎回の反復での関節変位ベクトルの修正量、$`\boldsymbol{J}`$は$`\boldsymbol{e}(\boldmath{q})`$の勾配$`\partial\boldsymbol{e}(\boldmath{q})/\partial\boldsymbol{q}`$、$`\boldsymbol{W}_{\mathrm{N}}`$は関節変位ベクトル修正量の各成分への重みです。
 第二項の働きにより、複数（冗長な場合は無数に）存在する解のうち、現在の関節変位から最も小さい動きで到達できる解を求めることになります。
 
 中身については次の論文
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 ```C
   rkChainRegisterIKJointAll( &chain, 0.001 );
 ```
-二つ目の引数は、毎回の反復計算における$\boldsymbol{W}_{\mathrm{N}}$を\boldsymbol{W}_{\mathrm{N}}=w_{\mathrm{N}}\boldsymbol{1}$としたときの$w_{\mathrm{N}}$に相当します。
+二つ目の引数は、毎回の反復計算における$`\boldsymbol{W}_{\mathrm{N}}`$を$`\boldsymbol{W}_{\mathrm{N}}=w_{\mathrm{N}}\boldsymbol{1}`$としたときの$`w_{\mathrm{N}}`$に相当します。
 関節ごとに異なる重みを設定したい、例えば`link1`の関節の重みを0.01としたい場合は、次のようにします。
 ```C
   rkChainRegisterIKJoint( &chain, "link1", 0.01 );
@@ -186,8 +186,8 @@ int main(int argc, char *argv[])
   zMat3DRotPitchDRC( zFrame3DAtt(&goal), -zDeg2Rad(90) );
 ```
 では、エフェクタリンクの現在の座標系を`goal`にコピーし、
-$x$座標を0.05、$z$座標を0.1、それぞれ増やしています。
-また、姿勢を$y$軸まわりに-90度回転させています。
+$`x`$座標を0.05、$`z`$座標を0.1、それぞれ増やしています。
+また、姿勢を$`y`$軸まわりに-90度回転させています。
 これらを
 ```C
   rkIKCellSetRefVec( cell[0], zFrame3DPos(&goal) );
@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
 とすれば良いです。
 対応するマスクは`RK_IK_ATTR_MASK_ID_SUB`です。
 
-IKアトリビュートを使って、最適化計算における$\boldsymbol{W}_{\mathrm{E}}$を指定することもできます。
+IKアトリビュートを使って、最適化計算における$`\boldsymbol{W}_{\mathrm{E}}`$を指定することもできます。
 この場合は
 ```C
   rkIKAttrSetWeight( &attr, w1, w2, w3 );
@@ -396,8 +396,8 @@ IKアトリビュートを使って、最適化計算における$\boldsymbol{W}
 対応するマスクは`RK_IK_ATTR_MASK_WEIGHT`です。
 デフォルトでは、重みは全て1.0となります。
 
-3成分1セットと書きましたが、場合によっては$x$、$y$、$z$成分のうち一つまたは二つだけを指定したいこともあります。
-たとえば$x$、$y$成分の目標だけを指定したい時は、
+3成分1セットと書きましたが、場合によっては$`x`$、$`y`$、$`z`$成分のうち一つまたは二つだけを指定したいこともあります。
+たとえば$`x`$、$`y`$成分の目標だけを指定したい時は、
 ```C
   rkIKCellSetActiveComponent( cell, RK_IK_CELL_MODE_X | RK_IK_CELL_MODE_Y );
 ```
