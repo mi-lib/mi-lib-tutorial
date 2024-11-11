@@ -1,31 +1,31 @@
-[robot]
+[roki::robot]
 name: super_robot
 
-[optic]
+[zeo::optic]
 name: cyan
 ambient: 0.5, 0.5, 0.5
 diffuse: #64c8ff
 specular: 0, 0, 0
 
-[optic]
+[zeo::optic]
 name: yellow
 ambient: 0.5, 0.5, 0.5
 diffuse: #ffff96
 specular: 0, 0, 0
 
-[optic]
+[zeo::optic]
 name: blue
 ambient: 0.5, 0.5, 0.5
 diffuse: #6400ff
 specular: 0, 0, 0
 
-[optic]
+[zeo::optic]
 name: pink
 ambient: 0.5, 0.5, 0.5
 diffuse: #ff96ff
 specular: 0, 0, 0
 
-[shape]
+[zeo::shape]
 name: torso
 type: box
 optic: cyan
@@ -34,7 +34,7 @@ width: 0.2
 height: 0.2
 depth: 0.15
 
-[shape]
+[zeo::shape]
 name: chest_plate
 type: box
 optic: yellow
@@ -43,7 +43,7 @@ width: 0.15
 height: 0.1
 depth: 0.05
 
-[shape]
+[zeo::shape]
 name: crotch
 type: box
 optic: yellow
@@ -52,7 +52,7 @@ width: 0.05
 height: 0.15
 depth: 0.1
 
-[shape]
+[zeo::shape]
 name: neck
 type: cylinder
 optic: cyan
@@ -60,7 +60,7 @@ center: ( 0, 0, 0.05 )
 center: ( 0, 0, 0.1 )
 radius: 0.025
 
-[shape]
+[zeo::shape]
 name: head
 type: box
 optic: cyan
@@ -69,7 +69,7 @@ width: 0.2
 height: 0.15
 depth: 0.2
 
-[shape]
+[zeo::shape]
 name: left_eye
 type: cylinder
 optic: yellow
@@ -77,7 +77,7 @@ center: ( 0.125, 0.05, 0 )
 center: ( 0.1, 0.05, 0 )
 radius: 0.025
 
-[shape]
+[zeo::shape]
 name: right_eye
 type: cylinder
 optic: yellow
@@ -85,7 +85,7 @@ center: ( 0.125, -0.05, 0 )
 center: ( 0.1, -0.05, 0 )
 radius: 0.05
 
-[shape]
+[zeo::shape]
 name: left_ear
 type: cone
 optic: pink
@@ -93,7 +93,7 @@ center: ( 0, 0.1, 0 )
 vert: ( 0, 0.125, 0 )
 radius: 0.05
 
-[shape]
+[zeo::shape]
 name: right_ear
 type: cone
 optic: pink
@@ -101,7 +101,7 @@ center: ( 0, -0.1, 0 )
 vert: ( 0, -0.125, 0 )
 radius: 0.05
 
-[shape]
+[zeo::shape]
 name: arm
 type: box
 optic: cyan
@@ -110,14 +110,14 @@ width: 0.2
 height: 0.05
 depth: 0.05
 
-[shape]
+[zeo::shape]
 name: hand
 type: sphere
 optic: blue
 center: ( 0, -0.175, 0 )
 radius: 0.025
 
-[shape]
+[zeo::shape]
 name: leg
 type: box
 optic: cyan
@@ -126,7 +126,7 @@ width: 0.2
 height: 0.05
 depth: 0.075
 
-[shape]
+[zeo::shape]
 name: foot
 type: box
 optic: blue
@@ -135,19 +135,19 @@ width: 0.05
 height: 0.05
 depth: 0.15
 
-[link]
+[roki::link]
 name: body
 jointtype: float
 shape: torso, chest_plate, crotch, neck
 
-[link]
+[roki::link]
 name: head
 parent: body
 jointtype: revolute
 pos: ( 0, 0, 0.15 )
 shape: head, left_eye, right_eye, left_ear, right_ear
 
-[link]
+[roki::link]
 name: left_arm
 parent: body
 jointtype: revolute
@@ -158,7 +158,7 @@ att:
  0, 1, 0,
 shape: arm, hand
 
-[link]
+[roki::link]
 name: right_arm
 parent: body
 jointtype: revolute
@@ -169,7 +169,7 @@ att:
  0, 1, 0,
 shape: arm, hand
 
-[link]
+[roki::link]
 name: left_leg
 parent: body
 jointtype: revolute
@@ -180,7 +180,7 @@ att:
  0, 1, 0,
 shape: leg, foot
 
-[link]
+[roki::link]
 name: right_leg
 parent: body
 jointtype: revolute

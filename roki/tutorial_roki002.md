@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットモデルをプログラムで使おう
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.01.17. 作成 Zhidao
- - 2023.03.12. 最終更新 Zhidao
+ - 2024.11.07. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 }
 ```
 `rkChain`はキネマティックチェーンを表す構造体です。
-プログラムのファイル名をsuper\_robot\_read.cとして、これをコンパイルするには次のようにします。
+プログラムのファイル名を`super_robot_read.c`として、これをコンパイルするには次のようにします。
 ```sh
 % gcc `roki-config --cflags` super_robot_read.c `roki-config -l`
 ```
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 次のようなmakefileを作っておくのも良いでしょう。
 ```makefile
 CC=gcc
-CFLAGS= -Wall -O3 `roki-config --cflags`
+CFLAGS=-Wall -O3 `roki-config --cflags`
 LINK=`roki-config -l`
 
 %: %.c
@@ -45,15 +45,15 @@ clean:
 ```sh
 % make super_robot_read
 ```
-とすることで実行ファイルsuper\_robot\_readが出来ます。
+とすることで実行ファイル`super_robot_read`が出来ます。
 
 # 簡単な順運動学計算
 
 ## 関節ごとに変位を与える
 
-上記のプログラムは、super\_robot.ztkファイルを読み込んで`rkChain`構造体インスタンスを作り、すぐにそれを破棄する、ということしかやっていません。
+上記のプログラムは、`super_robot.ztk`ファイルを読み込んで`rkChain`構造体インスタンスを作り、すぐにそれを破棄する、ということしかやっていません。
 もう少し意味のある計算をやってみましょう。
-前回の例ではrk\_penを使って関節を動かしましたが、これをプログラム上でやってみます。
+前回の例ではrk_penを使って関節を動かしましたが、これをプログラム上でやってみます。
 次のプログラムを実行してみて下さい。
 
 ```C
@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
 ```C
   zVec3DCreate( &hand_local, 0, -0.175, 0 ); /* right hand position in the link frame */
 ```
+`zVec3D`はZeoで定義される3次元ベクトル構造体です。
+
 次に、`right_arm`リンクへのポインタを取得しています。
 ```C
   l = rkChainFindLink( &robot, "right_arm" );
@@ -119,6 +121,8 @@ int main(int argc, char *argv[])
   rkChainUpdateFK( &robot );
 ```
 なお、度をラジアンに変更するのに`zDeg2Rad()`を用いました。
+これはZMで定義されています。
+
 先程と同じく、`rkLinkPointWldPos()`により`hand_local`を`hand_world`に変換します。
 ```C
   rkLinkPointWldPos( l, &hand_local, &hand_world );
@@ -143,8 +147,6 @@ after rotation
 右手先位置（球の中心）は( 0, -0.15, -0.175 )ですから、
 関節を90°上に回転させれば右手先位置は( 0.175, -0.15, 0 )になるはずです。
 上記の結果と（ラジアン変換の影響で微小な誤差が乗っていますが）合っています。
-
-なお、上記プログラム中で出てきた3次元ベクトル構造体`zVec3D`はZeoで、`zDeg2Rad()`はZMで、それぞれ定義されています。
 
 全く同じ動作をするプログラムは、次のようにも書けます。
 ```C
@@ -206,15 +208,15 @@ RoKiで扱える関節には、
 
 <img width=720 alt="関節の種類" src="fig/joint_type.svg">
 
-各リンクは、一つの関節で一つの親リンクに接続します（このため関節プロパティはリンクタグフィールドに属します）。
-親リンクはparentフィールド、関節の種類はjointtypeフィールドにそれぞれ書くのでした。
+各リンクは、一つの関節で一つの親リンクに接続します（このため関節プロパティは`[roki::link]`タグフィールドに属します）。
+親リンクは`parent`フィールド、関節の種類は`jointtype`フィールドにそれぞれ書くのでした。
 逆に一つの親リンクは複数のリンクを子に持てますので、
-リンク系全体は根となる一つのリンク（ルートリンク）から樹木のように枝を伸ばす構造となります。
-super\_robot.ztkでは、bodyがルートリンク、
-残りのhead、left\_arm、right\_arm、left\_leg、right\_legが全てbodyの子リンクとなっています。
+リンク系全体は根となる一つのリンク（ルートリンク）から樹木のように枝分かれしていく構造となります。
+super_robot.ztkでは、`body`がルートリンク、
+残りの`head`、`left_arm`、`right_arm`、`left_leg`、`right_leg`が全て`body`の子リンクとなっています。
 
 ルートリンクも関節を持ちます。
-bodyリンクのjointtypeはfloat（浮遊関節）となっています。
+`body`リンクの`jointtype`は`float`（浮遊関節）となっています。
 これは、ルートリンクを**世界座標系**に接続します。
 
 各関節の変位は、可動方向に対応する複数の値によって表されます。
@@ -228,11 +230,11 @@ bodyリンクのjointtypeはfloat（浮遊関節）となっています。
 ## 全関節の変位を一度に与える
 
 リンク系全体の姿勢は、各リンクの関節変位を便宜上ベクトルのように並べたもので表すことができます。
-たとえばsuper\_robotの場合はbodyの関節変位が6個、残りリンクの関節変位がそれぞれ1個の値で表されますので、
+たとえばsuper_robotの場合は`body`の関節変位が6個、残りリンクの関節変位がそれぞれ1個の値で表されますので、
 これらを成分に持つ11次元のベクトル$\boldsymbol{q}=(q_{1}, q_{2}, q_{3}, q_{4}, q_{5}, q_{6}, q_{7}, q_{8}, q_{9}, q_{10}, q_{11})$がロボットの全身姿勢を一意に表します。
-$(q_{1},q_{2},q_{3})$が慣性座標系から見たbody原点の座標、
-$(q_{4},q_{5},q_{6})$が同じくbody座標系の姿勢、
-$q_{7}$、$q_{8}$、$q_{9}$、$q_{10}$、$q_{11}$がそれぞれhead、left\_arm、right\_arm、left\_leg、right\_legの回転角度です。
+$(q_{1},q_{2},q_{3})$が慣性座標系から見た`body`原点の座標、
+$(q_{4},q_{5},q_{6})$が同じく`body`座標系の姿勢、
+$q_{7}$、$q_{8}$、$q_{9}$、$q_{10}$、$q_{11}$がそれぞれ`head`、`left_arm`、`right_arm`、`left_leg`、`right_leg`の回転角度です。
 この$\boldsymbol{q}$のことを、**関節変位ベクトル**とか**一般化座標**とか**コンフィギュレーション**とか呼びます。
 厳密にはこれはベクトルではありません。その証拠にこの$\boldsymbol{q}$は加減算できません。
 ですが、ロボット工学はそのあたり寛容で、数値が複数並んでいればあまり注意せずベクトルと呼んでしまうことがよくあります。
@@ -292,13 +294,13 @@ int main(int argc, char *argv[])
 }
 ```
 `main()`関数から追っていきましょう。
-先の例と同じようにsuper\_robot\.ztkを読み込んで`rkChain`インスタンスを作成した後に、
+先の例と同じように`super_robot.ztk`を読み込んで`rkChain`インスタンスを作成した後に、
 ```C
   dis = zVecAlloc( rkChainJointSize( &robot ) );
 ```
 として、ロボットの関節変位ベクトルを用意します。
 `rkChainJointSize()`はロボットの関節変位ベクトルのサイズを自動計算する関数です。
-上で説明した通り、super\_robotならば11になるはずです。
+上で説明した通り、super_robotならば11になるはずです。
 なお、`zVec`はZMで定義されています。`zVecAlloc()`はZMのライブラリ関数です。
 
 次に
@@ -307,7 +309,7 @@ int main(int argc, char *argv[])
   j_righthand = rkChainFindLinkJointIDOffset( &robot, "right_arm" );
   j_leftfoot  = rkChainFindLinkJointIDOffset( &robot, "left_leg" );
 ```
-として、関節変位ベクトルの中でhead、right\_arm、left\_legの変位に対応する値が保持される成分の
+として、関節変位ベクトルの中で`head`、`right_arm`、`left_leg`の変位に対応する値が保持される成分の
 開始ID（関節IDオフセット）を取得しています。
 
 関節を動かす前の姿勢を
@@ -342,7 +344,7 @@ void output(rkChain *robot)
 }
 ```
 リンクIDは、真面目にやるならば先ほどのように`rkChainFindLinkID()`で取得すべきですが、
-`rkChain`のリンク配列にはモデルファイルに現れた[link]が順番に入りますので、
+`rkChain`のリンク配列はモデルファイルに現れた`[roki::link]`フィールドの順番にしたがって作成されますので、
 この例のようにリンク数が少なければ、予め分かっている値を直接書いてしまうのも良いでしょう。
 
 `rkChainLinkWldAtt()`は世界座標系から見たリンク座標系の姿勢（3×3行列）を返します。
@@ -373,7 +375,7 @@ void output(rkChain *robot)
 として姿勢を出力します。
 
 最後に関節変位ベクトルとキネマティックチェーンを破棄して終了です。
-```
+```C
   zVecFree( dis );
   rkChainDestroy( &robot );
 ```
@@ -408,7 +410,7 @@ leg foot position from joint center
 ## 動きの可視化
 
 数字だけからロボットの姿勢をイメージするのは、慣れるまではなかなか大変です。
-ロボットがどのように動くのかを可視化するために、rk\_animというツールの使い方を紹介しましょう。
+ロボットがどのように動くのかを可視化するために、rk_animというツールの使い方を紹介しましょう。
 先ほどのプログラムを少し改造して、次のようにします。
 ```C
 #include <roki/roki.h>
@@ -445,7 +447,7 @@ int main(int argc, char *argv[])
 ```
 `rkChain`インスタンスは関節変位ベクトルと関節IDオフセットを得るためだけに利用しています。
 運動学計算は行っていません。
-これを"super\_robot\_anim.c"という名前で保存し、コンパイルして出力を次のようにリダイレクトします。
+これを`super_robot_anim.c`という名前で保存し、コンパイルして出力を次のようにリダイレクトします。
 ```sh
 % ./super_robot_anim > test.zvs
 ```
@@ -464,8 +466,8 @@ int main(int argc, char *argv[])
 
 スーパーロボット君がこちらを向いてくれたでしょうか？
 
--x、-yオプションはカメラの$x$、$y$座標、
--panオプションはカメラのパン角度（反時計回り）をそれぞれ指定するものです。
+`-x`、`-y`オプションはカメラの$x$、$y$座標、
+`-pan`オプションはカメラのパン角度（反時計回り）をそれぞれ指定するものです。
 他にもいろいろなオプションがあり、
 ```sh
 % rk_anim -help
