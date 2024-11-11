@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットアームの逆運動学
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2024.08.07. 作成 Zhidao
- - 2024.11.07. 最終更新 Zhidao
+ - 2024.11.11. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -62,9 +62,9 @@ $`\mathcal{P}`$を**作業空間**と呼びます。
 RoKiでは、一般性の高い逆運動学の解法としてLevenberg-Marquardt法による数値解法を実装しています。
 これは、直接解を求める替わりに、次の最小二乗問題を反復解法で解くものです。
 ```math
-\boldmath{q}=\mathop{\mathrm{arg~min}}_{\boldsymbol{q}}\left\{\frac{1}{2}\boldsymbol{e}^{\mathrm{T}}(\boldmath{q})\boldsymbol{W}_{\mahrm{E}}\boldsymbol{e}(\boldmath{q})\right\}
+\boldmath{q}=\mathop{\mathrm{arg~min}}_{\boldsymbol{q}}\left\{\frac{1}{2}\boldsymbol{e}^{\mathrm{T}}(\boldmath{q})\boldsymbol{W}_{\mathrm{E}}\boldsymbol{e}(\boldmath{q})\right\}
 ```
-ただし、$`\boldsymbol{e}(\boldmath{q})`$はエフェクタ変位の目標からの残差、$`\boldsymbol{W}_{\mahrm{E}}`$は$`\boldsymbol{e}(\boldmath{q})`$の各成分にかけられる重みです。
+ただし、$`\boldsymbol{e}(\boldmath{q})`$はエフェクタ変位の目標からの残差、$`\boldsymbol{W}_{\mathrm{E}}`$は$`\boldsymbol{e}(\boldmath{q})`$の各成分にかけられる重みです。
 このようにすることで、厳密に$`\boldsymbol{e}(\boldmath{q})=\boldsymbol{0}`$とする解が存在しない場合は、エフェクタ変位の目標からの残差を最小化する姿勢をもって解の代わりにします。
 
 なお、毎回の反復計算では次の最小化問題を解いています。
