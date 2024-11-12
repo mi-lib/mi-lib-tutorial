@@ -14,13 +14,15 @@ int main(int argc, char *argv[])
   rkChainRegisterIKJointAll( &chain, 0.01 );
 
   rkIKAttrSetLinkID( &attr, &chain, "hand1" );
-  cell[0] = rkChainRegisterIKCellWldPos( &chain, NULL, 0, &attr, RK_IK_ATTR_MASK_ID );
+  rkIKAttrSetWeight( &attr, 1.0, 1.0, 1.0 );
+  cell[0] = rkChainRegisterIKCellWldPos( &chain, NULL, 0, &attr, RK_IK_ATTR_MASK_ID | RK_IK_ATTR_MASK_WEIGHT );
   zVec3DCopy( rkChainLinkWldPos( &chain, attr.id ), &ref[0] );
   rkIKAttrSetLinkID( &attr, &chain, "hand2" );
-  cell[1] = rkChainRegisterIKCellWldPos( &chain, NULL, 1, &attr, RK_IK_ATTR_MASK_ID );
+  cell[1] = rkChainRegisterIKCellWldPos( &chain, NULL, 0, &attr, RK_IK_ATTR_MASK_ID | RK_IK_ATTR_MASK_WEIGHT );
   zVec3DCopy( rkChainLinkWldPos( &chain, attr.id ), &ref[1] );
   rkIKAttrSetLinkID( &attr, &chain, "hand3" );
-  cell[2] = rkChainRegisterIKCellWldPos( &chain, NULL, 2, &attr, RK_IK_ATTR_MASK_ID );
+  rkIKAttrSetWeight( &attr, 0.1, 0.1, 0.1 );
+  cell[2] = rkChainRegisterIKCellWldPos( &chain, NULL, 0, &attr, RK_IK_ATTR_MASK_ID | RK_IK_ATTR_MASK_WEIGHT );
   zVec3DCopy( rkChainLinkWldPos( &chain, attr.id ), &ref[2] );
 
   ref[0].c.y -= 1.0;

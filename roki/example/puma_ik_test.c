@@ -27,14 +27,7 @@ int main(int argc, char *argv[])
   rkChainIK( &chain, dis, zTOL, 0 );
 
 #if 1
-  int i;
-
-  printf( "[%s]\n", ZTK_TAG_ROKI_CHAIN_INIT );
-  for( i=0; i<rkChainLinkNum(&chain); i++ ){
-    if( rkChainLinkJointDOF(&chain,i) == 0 ) continue;
-    printf( "joint: %s ", rkChainLinkName(&chain,i) );
-    rkJointDisFPrintZTK( stdout, rkChainLinkJoint(&chain,i) );
-  }
+  rkChainInitFPrintZTK( stdout, &chain );
 #else
   zVec6D error;
 

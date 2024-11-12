@@ -257,14 +257,7 @@ error
 
 これではロボットがどんな姿勢になっているか分からない、というご不満はごもっともなので、結果を出力する部分を次のように変えてみましょう。
 ```C
-  int i;
-
-  printf( "[roki::chain::init]\n" );
-  for( i=0; i<rkChainLinkNum(&chain); i++ ){
-    if( rkChainLinkJointDOF(&chain,i) == 0 ) continue;
-    printf( "joint: %s ", rkChainLinkName(&chain,i) );
-    rkJointDisFPrintZTK( stdout, rkChainLinkJoint(&chain,i) );
-  }
+  rkChainInitFPrintZTK( stdout, &chain );
 ```
 実行すると標準出力に何やら表示されますので、これを`ik_result.ztk`というファイルにリダイレクトして
 ```sh
