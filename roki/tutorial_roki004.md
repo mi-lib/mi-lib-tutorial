@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットアームの逆動力学
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2024.08.03. 作成 Zhidao
- - 2024.11.11. 最終更新 Zhidao
+ - 2024.11.22. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -118,9 +118,7 @@ int main(int argc, char *argv[])
 
   for( i=0; i<STEP; i++ ){
     set_joint_angle( q, dq, ddq, ( t = T*(double)i/STEP ) );
-    rkChainFK( &robot, q );
-    rkChainID( &robot, dq, ddq );
-    rkChainGetJointTrqAll( &robot, trq );
+    rkChainID( &robot, q, dq, ddq, trq );
     printf( "%g %g %g %g %g %g %g %g %g %g\n", t, zVecElem(q,0), zVecElem(q,1), zVecElem(q,2), zVecElem(dq,0), zVecElem(dq,1), zVecElem(dq,2), zVecElem(trq,0), zVecElem(trq,1), zVecElem(trq,2) );
   }
   zVecFreeAtOnce( 4, q, dq, ddq, trq );
@@ -130,17 +128,17 @@ int main(int argc, char *argv[])
 ```
 
 `set_joint_angle()`関数と`main()`関数の前半は、[前回](tutorial_roki003.md)示したものと同じです。
-`for`ループの中で、
-まず関節変位ベクトル`q`を作成し、`rkChainFK()`に与えて順運動学を解きます。
-続いて呼んでいる`rkChainID()`で、逆動力学を解いています。
+これによって作成された関節変位ベクトル`q`、関節速度ベクトル`dq`、関節加速度ベクトル`ddq`を`rkChainID()`に与えて、逆動力学を解いています。
+出力`trq`は全関節のトルク値をまとめたベクトルで、**関節トルクベクトル**とか**一般化座標に対応する一般化力ベクトル**などと呼ばれます。
 これは、次のように書いても同じ結果が得られます。
 ```C
-    rkChainSetJointRateAll( &robot, dq, ddq );
-    rkChainUpdateID( &robot );
+  rkChainSetJointDisAll( &robot, q );
+  rkChainUpdateFK( &robot );
+  rkChainSetJointRateAll( &robot, dq, ddq );
+  rkChainUpdateID( &robot );
+  rkChainGetJointTrqAll( &robot, trq );
 ```
-求まった全関節のトルクの値は、`rkChainGetJointTrqAll()`関数で取り出すことが出来ます。
-`trq`は**関節トルクベクトル**とか**一般化座標に対応する一般化力ベクトル**などと呼ばれます。
-
+`rkChainGetJointTrqAll()`は、全ての関節トルクを関節トルクベクトルにまとめて取り出す関数です。
 特定のリンク、例えばリンク1の関節トルクだけを取り出したい場合は、次のように出来ます。
 ```C
   double torque;
@@ -175,13 +173,13 @@ int main(int argc, char *argv[])
 上で紹介した`rkChainID()`と`rkChainUpdateID()`は、実は関数ではなくマクロです。
 関数プロトタイプは`rk_chain.h`の中で次のように宣言されています。
 ```C
-void rkChainUpdateID_G(rkChain *chain, zVec6D *g);
+void rkChainUpdateID_G(rkChain *chain, const zVec6D *g);
 #define rkChainUpdateID(chain)     rkChainUpdateID_G( chain, RK_GRAVITY6D )
 #define rkChainUpdateID0G(chain)   rkChainUpdateID_G( chain, ZVEC6DZERO )
 
-void rkChainID_G(rkChain *chain, zVec vel, zVec acc, zVec6D *g);
-#define rkChainID(chain,vel,acc)   rkChainID_G( chain, vel, acc, RK_GRAVITY6D )
-#define rkChainID0G(chain,vel,acc) rkChainID_G( chain, vel, acc, ZVEC6DZERO )
+zVec rkChainID_G(rkChain *chain, const zVec dis, const zVec vel, const zVec acc, const zVec6D *g, zVec trq);
+#define rkChainID(chain,dis,vel,acc,trq)   rkChainID_G( chain, dis, vel, acc, RK_GRAVITY6D, trq )
+#define rkChainID0G(chain,dis,vel,acc,trq) rkChainID_G( chain, dis, vel, acc, ZVEC6DZERO,   trq )
 ```
 つまり実体は`rkChainUpdateID_G`、`rkChainID_G()`という関数です。
 これらがとる引数`g`は「場の加速度」を意味します。
@@ -189,7 +187,7 @@ void rkChainID_G(rkChain *chain, zVec vel, zVec acc, zVec6D *g);
 
 `rkChainUpdateID_G()`は次のように定義されています。
 ```
-void rkChainUpdateID_G(rkChain *chain, zVec6D *g)
+void rkChainUpdateID_G(rkChain *chain, const zVec6D *g)
 {
   rkChainUpdateRateG( chain, g );
   rkChainUpdateWrench( chain );
