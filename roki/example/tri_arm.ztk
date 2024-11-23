@@ -55,25 +55,17 @@ height: 0.02
 width: 0.18
 
 [zeo::shape]
-name: wrist
-type: cylinder
-optic: white
-center: 0, 0, 0.0
-center: 0, 0,-0.03
-radius: 0.01
-
-[zeo::shape]
 name: hand
 type: cone
 optic: red
-center: 0, 0, 0
-vert: 0, 0, 0.05
+center: 0, 0, -0.05
+vert: 0, 0, 0
 radius: 0.02
 
 % 0:base
 [roki::link]
-name : base
-jointtype : fixed
+name: base
+jointtype: fixed
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -82,8 +74,8 @@ frame: {
 shape: base
 
 [roki::link]
-name : link01
-jointtype : spherical
+name: link01
+jointtype: spherical
 mass: 1.0
 COM: auto
 inertia: auto
@@ -92,12 +84,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.08
 }
-parent : base
-shape: joint shaft
+parent: base
+shape: joint, shaft
 
 [roki::link]
-name : link02
-jointtype : spherical
+name: link02
+jointtype: spherical
 mass: 1.0
 COM: auto
 inertia: auto
@@ -106,12 +98,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link01
-shape: joint shaft
+parent: link01
+shape: joint, shaft
 
 [roki::link]
-name : link03
-jointtype : spherical
+name: link03
+jointtype: spherical
 mass: 1.0
 COM: auto
 inertia: auto
@@ -120,13 +112,13 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link02
-shape: joint shaft fork_base
+parent: link02
+shape: joint, shaft, fork_base
 
 % 1st fork
 [roki::link]
-name : link11
-jointtype : spherical
+name: link11
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -135,12 +127,12 @@ frame: {
  0, 1, 0,-0.07,
  0, 0, 1, 0.15
 }
-parent : link03
-shape: joint shaft
+parent: link03
+shape: joint, shaft
 
 [roki::link]
-name : link12
-jointtype : spherical
+name: link12
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -149,12 +141,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link11
-shape: joint shaft
+parent: link11
+shape: joint, shaft
 
 [roki::link]
-name : link13
-jointtype : spherical
+name: link13
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -163,12 +155,26 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link12
+parent: link12
+shape: joint, shaft
+
+[roki::link]
+name: link14
+jointtype: spherical
+mass: 0.6
+COM: auto
+inertia: auto
+frame: {
+ 1, 0, 0, 0,
+ 0, 1, 0, 0,
+ 0, 0, 1, 0.15
+}
+parent: link13
 shape: joint
 
 [roki::link]
-name : hand1
-jointtype : fixed
+name: hand1
+jointtype: fixed
 mass: 0.5
 COM: auto
 inertia: auto
@@ -177,14 +183,13 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.05
 }
-parent : link13
-shape: wrist
+parent: link14
 shape: hand
 
 % 2nd fork
 [roki::link]
-name : link21
-jointtype : spherical
+name: link21
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -193,12 +198,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link03
-shape: joint shaft
+parent: link03
+shape: joint, shaft
 
 [roki::link]
-name : link22
-jointtype : spherical
+name: link22
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -207,12 +212,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link21
-shape: joint shaft
+parent: link21
+shape: joint, shaft
 
 [roki::link]
-name : link23
-jointtype : spherical
+name: link23
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -221,12 +226,26 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link22
+parent: link22
+shape: joint, shaft
+
+[roki::link]
+name: link24
+jointtype: spherical
+mass: 0.6
+COM: auto
+inertia: auto
+frame: {
+ 1, 0, 0, 0,
+ 0, 1, 0, 0,
+ 0, 0, 1, 0.15
+}
+parent: link23
 shape: joint
 
 [roki::link]
-name : hand2
-jointtype : fixed
+name: hand2
+jointtype: fixed
 mass: 0.5
 COM: auto
 inertia: auto
@@ -235,14 +254,13 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.05
 }
-parent : link23
-shape: wrist
+parent: link24
 shape: hand
 
 % 3rd fork
 [roki::link]
-name : link31
-jointtype : spherical
+name: link31
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -251,12 +269,12 @@ frame: {
  0, 1, 0, 0.07,
  0, 0, 1, 0.15
 }
-parent : link03
-shape: joint shaft
+parent: link03
+shape: joint, shaft
 
 [roki::link]
-name : link32
-jointtype : spherical
+name: link32
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -265,12 +283,12 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link31
-shape: joint shaft
+parent: link31
+shape: joint, shaft
 
 [roki::link]
-name : link33
-jointtype : spherical
+name: link33
+jointtype: spherical
 mass: 0.6
 COM: auto
 inertia: auto
@@ -279,12 +297,26 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.15
 }
-parent : link32
+parent: link32
+shape: joint, shaft
+
+[roki::link]
+name: link34
+jointtype: spherical
+mass: 0.6
+COM: auto
+inertia: auto
+frame: {
+ 1, 0, 0, 0,
+ 0, 1, 0, 0,
+ 0, 0, 1, 0.15
+}
+parent: link33
 shape: joint
 
 [roki::link]
-name : hand3
-jointtype : fixed
+name: hand3
+jointtype: fixed
 mass: 0.5
 COM: auto
 inertia: auto
@@ -293,6 +325,5 @@ frame: {
  0, 1, 0, 0,
  0, 0, 1, 0.05
 }
-parent : link33
-shape: wrist
+parent: link34
 shape: hand

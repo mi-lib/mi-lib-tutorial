@@ -37,15 +37,7 @@ int main(int argc, char *argv[])
 
   for( i=0; i<STEP; i++ ){
     set_joint_angle( q, dq, ddq, ( t = T*(double)i/STEP ) );
-#if 0
     rkChainID( &robot, q, dq, ddq, trq );
-#else
-    rkChainSetJointDisAll( &robot, q );
-    rkChainUpdateFK( &robot );
-    rkChainSetJointRateAll( &robot, dq, ddq );
-    rkChainUpdateID( &robot );
-    rkChainGetJointTrqAll( &robot, trq );
-#endif
     printf( "%g %g %g %g %g %g %g %g %g %g\n", t, zVecElem(q,0), zVecElem(q,1), zVecElem(q,2), zVecElem(dq,0), zVecElem(dq,1), zVecElem(dq,2), zVecElem(trq,0), zVecElem(trq,1), zVecElem(trq,2) );
   }
   zVecFreeAtOnce( 4, q, dq, ddq, trq );

@@ -1,9 +1,9 @@
-RoKiチュートリアル: ロボットアームの逆運動学
+RoKiチュートリアル: ロボットアームの逆運動学(その1)
 ====================================================================================================
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2024.08.07. 作成 Zhidao
- - 2024.11.11. 最終更新 Zhidao
+ - 2024.11.23. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -329,104 +329,3 @@ int main(int argc, char *argv[])
 を実行すると、次のようなアニメーションが見られます（実際はもっとゆっくりな動きです。GIFアニメーションのコマ数を落とした都合で速回しになってしまってします）。
 
 <img width=500 alt="PUMA逆運動学テストの結果(8の字軌道)" src="fig/puma_ik_eight.gif">
-
-# IKセルの登録とIKアトリビュートについて
-
-エフェクタ変位の目標を指定する関数には、次の5種類があります。
-
- - `rkChainRegisterIKCellWldPos()` … リンク座標系内のある点の世界座標系における位置
- - `rkChainRegisterIKCellWldAtt()` … リンク座標系の世界座標系における姿勢
- - `rkChainRegisterIKCellL2LPos()` … リンク座標系内のある点の、別のリンク座標系における位置
- - `rkChainRegisterIKCellL2LAtt()` … リンク座標系の、別のリンク座標系における姿勢
- - `rkChainRegisterIKCellCOM()` … 世界座標系における重心の位置
-
-対象となるリンクIDは、上のサンプルプログラムにあったように
-```C
-  rkIKAttrSetLinkID( &attr, &chain, name );
-```
-または
-```C
-  attr.id = rkChainFindLinkID( &chain, name );
-```
-として指定します。
-
-「リンク座標系内のある点」の位置は、`attr`の`attention_point`フィールドで指定できます。
-これには
-```C
-  rkIKAttrSetAttentionPoint( &attr, x, y, z );
-```
-または
-```C
-  rkIKAttrCopyAttentionPoint( &attr, &pos );
-```
-を使うと良いでしょう。
-`x`、`y`、`z`は`double`型変数、`pos`は`zVec3D`インスタンスです。
-対応するマスクは`RK_IK_ATTR_MASK_ATTENTION_POINT`です。
-
-上のサンプルプログラムでは、これを陽に与えていません。
-この場合はリンク座標系原点が`attention_point`となります。
-
-`rkChainRegisterIKCellL2LPos()`、`rkChainRegisterIKCellL2LAtt()`における「別のリンク」は、
-`attr`の`id_sub`フィールドで指定できます。
-これは
-```C
-  rkIKAttrSetLinkID2( &attr, &chain, name );
-```
-または
-```C
-  attr.id_sub = rkChainFindLinkID( &chain, name );
-```
-とすれば良いです。
-対応するマスクは`RK_IK_ATTR_MASK_ID_SUB`です。
-
-IKアトリビュートを使って、最適化計算における$`\boldsymbol{W}_{\mathrm{E}}`$を指定することもできます。
-この場合は
-```C
-  rkIKAttrSetWeight( &attr, w1, w2, w3 );
-```
-として下さい。
-各IKセルは、3成分1セットとしているので、このような書き方になります。
-対応するマスクは`RK_IK_ATTR_MASK_WEIGHT`です。
-デフォルトでは、重みは全て1.0となります。
-
-3成分1セットと書きましたが、場合によっては$`x`$、$`y`$、$`z`$成分のうち一つまたは二つだけを指定したいこともあります。
-たとえば$`x`$、$`y`$成分の目標だけを指定したい時は、
-```C
-  rkIKCellSetActiveComponent( cell, RK_IK_CELL_MODE_X | RK_IK_CELL_MODE_Y );
-```
-のようにすればできます。
-
-なお、
-```C
-  rkIKCellDisable( cell );
-```
-とすると、登録したIKセル`cell`が一時的に無効化されます（逆運動学計算時に考慮されません）。
-無効化したIKセルを再び有効化したい場合には、
-```C
-  rkIKCellEnable( cell );
-```
-として下さい。
-あるいは`rkIKCellSetRefVec()`や`rkIKCellSetRefAtt()`で目標値を指定すると、そのIKセルは自動的に有効化されます。
-
-
-IKセルに名前をつけると、そのセルを後から参照することが出来ます。
-たとえば
-```C
-  rkChainRegisterIKCellWldPos( &chain, "position", 0, &attr, RK_IK_ATTR_MASK_ID | RK_IK_ATTR_MASK_ATTENTION_POINT );
-```
-としておいて、
-```C
-  cell = rkChainFindIKCellByName( &chain, "position" );
-```
-とすれば、`cell`は上記のIKセルへのポインタとなります。
-
-
-# 重み付き逆運動学と優先度付き逆運動学
-
-複数のエフェクタを持つ冗長なロボットでは、エフェクタ変位の目標に**優先度**を設定することができます。
-たとえば人が座ったまま、右手と左手で別々のものを持とうとする時、その二つのものが離れて置かれている場合には両方をいっぺんに持つことは出来ません。
-右手側にあるものは絶対持ちたい、左手側にあるものは、もし持てるならば持ちたい、というように、持ちたい気持ちの強さに差がある状況を数字で表したものが優先度です。
-
-優先度は数字の大小だけが意味を持ちます。
-数字が大きいほど優先度が高いことを表します。
-
