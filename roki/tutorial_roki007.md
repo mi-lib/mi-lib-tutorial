@@ -382,14 +382,14 @@ J. Y. S. Luh, M. W. Walker, and R. P. C. Paul, "On-Line Computational Scheme for
 
 考え方は単純で、
 
- 1. ある参照軌道${}^{\mathrm{d}}\bm{q}(t)$に追従するような関節変位$\bm{q}(t)$のダイナミクスを考える。たとえば次の2次遅れ系で設計できる。
+ 1. ある参照軌道${}^{\mathrm{d}}\boldsymbol{q}(t)$に追従するような関節変位$\boldsymbol{q}(t)$のダイナミクスを考える。たとえば次の2次遅れ系で設計できる。
 $$
-\ddot{\bm{q}}-{}^{\mathrm{d}}\ddot{\bm{q}}+2\zeta\omega_{\mathrm{n}}(\dot{\bm{q}}-{}^{\mathrm{d}}\dot{\bm{q}})+\omega_{\mathrm{n}}^{2}(\bm{q}-{}^{\mathrm{d}}\bm{q})=\bm{0}
+\ddot{\boldsymbol{q}}-{}^{\mathrm{d}}\ddot{\boldsymbol{q}}+2\zeta\omega_{\mathrm{n}}(\dot{\boldsymbol{q}}-{}^{\mathrm{d}}\dot{\boldsymbol{q}})+\omega_{\mathrm{n}}^{2}(\boldsymbol{q}-{}^{\mathrm{d}}\boldsymbol{q})=\boldsymbol{0}
 $$
 ただし、$\omega_{\mathrm{n}}$は系の固有角振動数、$\zeta$は減衰係数である。
  1. 上式を変形して
 $$
-\ddot{\bm{q}}={}^{\mathrm{d}}\ddot{\bm{q}}+2\zeta\omega_{\mathrm{n}}({}^{\mathrm{d}}\dot{\bm{q}}-\dot{\bm{q}})+\omega_{\mathrm{n}}^{2}({}^{\mathrm{d}}\bm{q}-\bm{q})
+\ddot{\boldsymbol{q}}={}^{\mathrm{d}}\ddot{\boldsymbol{q}}+2\zeta\omega_{\mathrm{n}}({}^{\mathrm{d}}\dot{\boldsymbol{q}}-\dot{\boldsymbol{q}})+\omega_{\mathrm{n}}^{2}({}^{\mathrm{d}}\boldsymbol{q}-\boldsymbol{q})
 $$
 とし、これを生じさせる駆動トルクを逆動力学により求める。
 
@@ -488,7 +488,7 @@ typedef struct{
   fd_data = data;
 ```
 上記の設計ダイナミクスに従って、ロボットの関節に発生させたい加速度を計算します。
-この例では簡単のため、関節変位の参照値は一定である（つまり$\dot{\bm{q}}=\bm{0}$、$\ddot{\bm{q}}=\bm{0}$）としています。
+この例では簡単のため、関節変位の参照値は一定である（つまり$\dot{\boldsymbol{q}}=\boldsymbol{0}$、$\ddot{\boldsymbol{q}}=\boldsymbol{0}$）としています。
 ```C
   zVecSub( dis, fd_data->ref, acc );
   zVecMulDRC( acc, -zSqr( fd_data->omega ) );
