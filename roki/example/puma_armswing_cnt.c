@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
     zMulMat3DVec3D( rkChainLinkWldAtt(&robot,6), rkChainLinkLinAcc(&robot,6), &acc );
     zVec3DSubDRC( &acc, RK_GRAVITY3D );
     /* hand position & velocity & acceleration */
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
-    zVec3DDataPrint( &vel );
-    zVec3DDataPrint( &acc );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( &vel );
+    zVec3DValuePrint( &acc );
     zEndl();
   }
   fclose( fp );

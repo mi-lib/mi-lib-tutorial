@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットアームの速度・加速度計算
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.02.13. 作成 Zhidao
- - 2024.11.11. 最終更新 Zhidao
+ - 2024.12.15. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ Copyright (C) Tomomichi Sugihara (Zhidao)
 `example/model/`の下にある`puma.ztk`がそれです。
 
 PUMA（Programmable Universal Machine for Assembly）は、
-1975年に当時米スタンフォード大学の学生だったシェインマンが作ったロボットです。
+1975年に当時米スタンフォード大学の学生だったSheinmannが作ったロボットです。
 歴史的に重要な存在なのですが、
 蘊蓄はさておきrk\_penで姿を見てみましょう。
 ```sh
@@ -57,8 +57,8 @@ Chain : PUMA
 
  - `rkChain`インスタンスの名前は `PUMA` です。
  - リンク0の名前は `base` で、固定関節で世界座標系に連結されています。
- - リンク1の名前は `link1` で、回転関節で `base` に連結されています。関節ベクトルが与えられたとき、その要素0がこの関節に対応する先頭成分です。
- - リンク2の名前は `link2` で、回転関節で `link1` に連結されています。関節ベクトルが与えられたとき、その要素1がこの関節に対応する先頭成分です。
+ - リンク1の名前は `link1` で、回転関節で `base` に連結されています。関節変位ベクトルが与えられたとき、その要素0がこの関節に対応する先頭成分です。
+ - リンク2の名前は `link2` で、回転関節で `link1` に連結されています。関節変位ベクトルが与えられたとき、その要素1がこの関節に対応する先頭成分です。
  - ...
 
 「[ロボットモデルを作ろう](tutorial_roki001.md)」ですでに試した通り、`-bone`オプションをつけてrk_penを起ち上げると、ロボットの関節配置を見ることが出来ます。
@@ -162,7 +162,7 @@ rk_animを使って動きを見てみましょう。
     rkChainFK( &robot, q );
     fprintf( fp, "%g ", T / STEP );
     zVecFPrint( fp, q );
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
     zEndl();
   }
 ```
@@ -188,7 +188,7 @@ d^2q_2/dt^2 &=-(4\pi/T)^2・\pi/6 \sin 4\pi t/T \\
 d^2q_3/dt^2 &=-(4\pi/T)^2・\pi/3 \sin 4\pi t/T \\
 }
 ```
-これに基づいて、次のように関節角速度ベクトル・関節角加速度ベクトルも作るよう`set_joint_angle()`関数を修正しましょう。
+これに基づいて、次のように**関節速度ベクトル**・**関節加速度ベクトル**も作るよう`set_joint_angle()`関数を修正しましょう。
 ```C
 void set_joint_angle(zVec q, zVec dq, zVec ddq, double t)
 {
@@ -237,9 +237,9 @@ int main(int argc, char *argv[])
     fprintf( fp, "%g ", T / STEP );
     zVecFPrint( fp, q );
     /* hand position & velocity & acceleration */
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
-    zVec3DDataPrint( &vel );
-    zVec3DDataPrint( &acc );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( &vel );
+    zVec3DValuePrint( &acc );
     zEndl();
   }
   fclose( fp );
@@ -327,11 +327,11 @@ int main(int argc, char *argv[])
     fprintf( fp, "%g ", T / STEP );
     zVecFPrint( fp, q );
     /* hand position & velocity & acceleration */
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
-    zVec3DDataPrint( &vel );
-    zVec3DDataPrint( &vel_approx );
-    zVec3DDataPrint( &acc );
-    zVec3DDataPrint( &acc_approx );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( &vel );
+    zVec3DValuePrint( &vel_approx );
+    zVec3DValuePrint( &acc );
+    zVec3DValuePrint( &acc_approx );
     zEndl();
   }
   fclose( fp );
@@ -440,9 +440,9 @@ int main(int argc, char *argv[])
     zMulMat3DVec3D( rkChainLinkWldAtt(&robot,6), rkChainLinkLinAcc(&robot,6), &acc );
     zVec3DSubDRC( &acc, RK_GRAVITY3D );
     /* hand position & velocity & acceleration */
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
-    zVec3DDataPrint( &vel );
-    zVec3DDataPrint( &acc );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( &vel );
+    zVec3DValuePrint( &acc );
     zEndl();
   }
   fclose( fp );

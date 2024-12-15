@@ -58,11 +58,11 @@ int main(int argc, char *argv[])
     fprintf( fp, "%g ", T / STEP );
     zVecFPrint( fp, q );
     /* hand position & velocity & acceleration */
-    zVec3DDataPrint( rkChainLinkWldPos(&robot,6) );
-    zVec3DDataPrint( &vel );
-    zVec3DDataPrint( &vel_approx );
-    zVec3DDataPrint( &acc );
-    zVec3DDataPrint( &acc_approx );
+    zVec3DValuePrint( rkChainLinkWldPos(&robot,6) );
+    zVec3DValuePrint( &vel );
+    zVec3DValuePrint( &vel_approx );
+    zVec3DValuePrint( &acc );
+    zVec3DValuePrint( &acc_approx );
     zEndl();
   }
   fclose( fp );

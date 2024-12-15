@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットアームの逆動力学
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2024.08.03. 作成 Zhidao
- - 2024.11.22. 最終更新 Zhidao
+ - 2024.12.15. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -76,7 +76,11 @@ Brian Armstrong, Oussama Khatib and Joel Burdick, "The Explicit Dynamic Model an
 # 逆動力学
 
 質量特性が与えられれば、運動（変位・速度・加速度）と力（トルク）とを結び付けることができます。
-次のようなコードを作ってみましょう。
+いくつかのアルゴリズムが知られていますが、RoKiではLuh, Walker, Paulが提案したNewton-Euler法を採用しています。
+
+J. Y. S. Luh, M. W. Walker, and R. P. C. Paul, "On-Line Computational Scheme for Mechanical Manipulators," Transactions of the ASME, Journal of Dynamic Systems, Measurement, and Control, Vol. 102, pp. 69-76, 1980.
+
+中身については上記文献を読んで頂くとして、次のようなコードを作ってみましょう。
 
 ```C
 #include <roki/rk_chain.h>
