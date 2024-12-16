@@ -3,7 +3,7 @@ mi-libチュートリアル: インストール
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2023.01.17. 作成 Zhidao
- - 2024.08.01. 最終更新 Zhidao
+ - 2024.12.16. 最終更新 Zhidao
  
 ----------------------------------------------------------------------------------------------------
 
@@ -73,6 +73,8 @@ mi-libは幾つかのサードパーティ製ライブラリを使用します�
  - ZEDA
    - libm
    - \*libxml2
+ - Zeo
+   - \*liblzf
  - RoKi-GL
    - OpenGL (GL, GLU, \*GLX, \*GLUT, \*GLFW, \*GLEW)
  - RoKi-FD
