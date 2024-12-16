@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="276.32291mm"
-   height="96.322914mm"
-   viewBox="0 0 276.32291 96.322914"
+   width="280.52917mm"
+   height="130.52916mm"
+   viewBox="0 0 280.52918 130.52916"
    version="1.1"
    id="svg8"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
@@ -29,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0006907"
-     inkscape:cx="513.14559"
-     inkscape:cy="126.91235"
+     inkscape:cx="530.13384"
+     inkscape:cy="246.82951"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -49,8 +49,8 @@
     <inkscape:grid
        type="xygrid"
        id="grid815"
-       originx="-4.3385419"
-       originy="-201.33854" />
+       originx="0.26458351"
+       originy="-169.73541" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -67,7 +67,7 @@
      inkscape:label="レイヤー 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-4.3385417,-201.33854)">
+     transform="translate(0.2645837,-169.73542)">
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.529167;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect906-1-9"
@@ -153,7 +153,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.264583">glfw</tspan><tspan
          sodipodi:role="line"
          x="4.325942"
-         y="234.45804"
+         y="234.45802"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.264583"
          id="tspan4636">glut</tspan><tspan
          sodipodi:role="line"
@@ -168,7 +168,7 @@
          id="tspan4638">GLX</tspan><tspan
          sodipodi:role="line"
          x="4.325942"
-         y="255.62469"
+         y="255.62471"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.264583"
          id="tspan839">GLU</tspan><tspan
          sodipodi:role="line"
