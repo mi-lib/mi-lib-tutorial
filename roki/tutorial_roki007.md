@@ -3,7 +3,7 @@ RoKiチュートリアル: ロボットアームの順動力学シミュレー�
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
  - 2024.11.27. 作成 Zhidao
- - 2024.12.15. 最終更新 Zhidao
+ - 2024.12.29. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -504,10 +504,6 @@ typedef struct{
 ```C
   rkChainFD( fd_data->chain, dis, vel, fd_data->trq, acc );
 ```
-逆動力学に与えた加速度と順動力学で求めた加速度は同じものになるのだから、無駄なことをやっているのじゃないか？と思われるかも知れません。
-この例に限って言えば、それは実は正しいです。
-実用上は、逆動力学計算に用いたロボット質量特性が実際と異なっていたり、駆動トルク以外の外力がかかったりするなど、外乱がある場合にも適切に動作するかどうかを確認するのにシミュレーションを行うわけなので、そうした状況を模擬する処理を`rkChainID()`と`rkChainFD()`の間に入れるのが良いでしょう。
-
 `main()`関数は、難しいことはしていません。
 まずPUMAモデルを読み込み、例によって`rkChainJointSize()`で求めたサイズの関節変位ベクトル、関節速度ベクトル、関節加速度ベクトルを作成します。
 ```C
@@ -552,3 +548,146 @@ typedef struct{
 ```
 
 <img width=500 alt="PUMA姿勢制御シミュレーション" src="fig/puma_forwarddynamics.gif">
+
+作成された`test.zvs`から関節1、2の変位を抜き出し、時間変化をグラフにしたものが次の図です。
+
+<img width=500 alt="PUMA姿勢制御シミュレーション 関節1、2変位の時間変化" src="fig/puma_forwarddynamics_jointangleservo_withoutmodelerror.svg">
+
+関節1、2とも、設計通りの応答で参照角度-45°に収束していることが分かります（減衰係数・固有角振動数とも同一にしているので、応答も完全に重なっています）。
+
+逆動力学に与えた加速度と順動力学で求めた加速度は同じものになるのだから、応答が設計通りになるのは当たり前じゃないか？と思われるかも知れません。
+この例に限って言えば、それは実は正しいです。
+実用上は、逆動力学計算に用いたロボット質量特性が実際と異なっていたり、駆動トルク以外の外力がかかったりするなど、外乱がある場合にも適切に動作するかどうかを確認するのにシミュレーションを行うわけなので、そうした状況を模擬する処理を入れることで効果がより良く分かるようになると思います。
+このことを示すために、プログラムを次のように変更してみましょう。
+```C
+#include <roki/roki.h>
+
+void add_mp_error(rkChain *chain_model, rkChain *chain_real, double mass_error, double com_error)
+{
+  rkMP mp;
+  zVec3D com_diff;
+  zMat3D inertia_scale;
+  int i;
+
+  for( i=0; i<rkChainLinkNum(chain_real); i++ ){
+    if( zIsTiny( rkChainLinkMass(chain_model,i) ) ) continue;
+    rkMPSetMass( &mp, rkChainLinkMass(chain_model,i)*( 1 + zRandF(0,mass_error) ) );
+    zVec3DCreate( &com_diff, zRandF(-com_error,com_error), zRandF(-com_error,com_error), zRandF(-com_error,com_error) );
+    zVec3DAdd( rkChainLinkCOM(chain_model,i), &com_diff, rkMPCOM(&mp) );
+    zMat3DMul( rkChainLinkInertia(chain_model,i), rkMPMass(&mp)/rkChainLinkMass(chain_model,i), &inertia_scale );
+    zMat3DCatVec3DDoubleOuterProd( &inertia_scale, -rkMPMass(&mp), &com_diff, rkMPInertia(&mp) );
+    rkLinkSetMP( rkChainLink(chain_real,i), &mp );
+  }
+}
+
+typedef struct{
+  rkChain *chain_model;
+  rkChain *chain_real;
+  zVec ref;
+  zVec trq;
+  double omega;
+  double zeta;
+} fd_data_t;
+
+zVec chain_fd(double t, zVec dis, zVec vel, void *data, zVec acc)
+{
+  fd_data_t *fd_data;
+
+  fd_data = data;
+  zVecSub( dis, fd_data->ref, acc );
+  zVecMulDRC( acc, -zSqr( fd_data->omega ) );
+  zVecCatDRC( acc, -2*fd_data->zeta*fd_data->omega, vel );
+  rkChainID( fd_data->chain_model, dis, vel, acc, fd_data->trq );
+  rkChainFD( fd_data->chain_real, dis, vel, fd_data->trq, acc );
+  return acc;
+}
+
+#define T  1.0
+#define DT 0.001
+
+#define DEFAULT_N 5
+
+int main(int argc, char *argv[])
+{
+  zODE2 ode;
+  fd_data_t fd_data;
+  rkChain puma_model, puma_real;
+  zVec dis, vel, acc;
+  int size, i, step;
+  FILE *fp;
+
+  zRandInit();
+  rkChainReadZTK( &puma_model, "puma.ztk" );
+  rkChainReadZTK( &puma_real, "puma.ztk" );
+
+  add_mp_error( &puma_model, &puma_real, 0.01, 0.01 );
+
+  size = rkChainJointSize( &puma_model );
+  dis = zVecAlloc( size );
+  vel = zVecAlloc( size );
+  acc = zVecAlloc( size );
+
+  fd_data.chain_model = &puma_model;
+  fd_data.chain_real = &puma_real;
+  fd_data.ref = zVecAlloc( size );
+  fd_data.trq = zVecAlloc( size );
+  fd_data.omega = zPIx2 * 3;
+  fd_data.zeta  = 1.0;
+  zVecSetElem( fd_data.ref, 1, -zDeg2Rad(45) );
+  zVecSetElem( fd_data.ref, 2, -zDeg2Rad(45) );
+
+  zODE2Assign( &ode, Regular, NULL, NULL, NULL, NULL );
+  zODE2AssignRegular( &ode, RKF45 );
+  zODE2Init( &ode, size, 0, chain_fd );
+  fp = fopen( "test.zvs", "w" );
+  fprintf( fp, "%g ", DT );
+  zVecFPrint( fp, dis );
+  step = T / DT;
+  for( i=0; i<=step; i++ ){
+    zODE2Update( &ode, i*DT, dis, vel, DT, &fd_data );
+    fprintf( fp, "%g ", DT );
+    zVecFPrint( fp, dis );
+  }
+  fclose( fp );
+  zODE2Destroy( &ode );
+  zVecFreeAtOnce( 5, dis, vel, acc, fd_data.ref, fd_data.trq );
+  rkChainDestroy( &puma_model );
+  rkChainDestroy( &puma_real );
+  return 0;
+}
+```
+まず、新たに`add_mp_error()`という関数を追加しました。
+これは制御用のモデル`chain_model`の質量特性に適当に誤差を加え、制御対象となる順動力学モデルを上書きする処理です（実際起こることはこれと逆で、制御対象となる実物の質量特性に対して誤差を持つ制御用モデルを用いることになります）。
+リンクごとの質量の最大誤差を`mass_error`、リンクごとの重心位置の最大誤差を`com_error`でそれぞれ与え、乱数的に誤差を決めています。
+慣性テンソルは、それらと整合するように修正しています。
+この処理は本質的でないので、詳しい説明は省略します。
+
+構造体`fd_data_t`は
+```C
+typedef struct{
+  rkChain *chain_model;
+  rkChain *chain_real;
+  zVec ref;
+  zVec trq;
+  double omega;
+  double zeta;
+} fd_data_t;
+```
+のように、制御用モデル`chain_model`とシミュレーション用モデル`chain_real`を区別して保持するように変更しました。
+関数`chain_fd()`の中で
+```C
+  rkChainID( fd_data->chain_model, dis, vel, acc, fd_data->trq );
+  rkChainFD( fd_data->chain_real, dis, vel, fd_data->trq, acc );
+```
+とモデルを使い分けていることにご注意下さい。
+`main()`関数もこの変更に合わせて修正してあります。
+
+上記のプログラムをコンパイル・実行すると、先の例と同様に`test.zvs`が作成されます。
+`rk_anim`で見た動きは、先のものとほとんど違いが分からないと思います。
+ですが、`test.zvs`から関節1、2の変位を抜き出し、時間変化をグラフにしてみると…
+
+<img width=500 alt="PUMA姿勢制御シミュレーション 関節1、2変位の時間変化" src="fig/puma_forwarddynamics_jointangleservo_withmodelerror.svg">
+
+二つの関節の時間応答に違いが出ました。
+また、どちらの関節変位にも参照角度-45°からの定常偏差があることが分かります（関節2の方が顕著です）。
+計算トルク法では、定常偏差は重力補償誤差により決まりますので、モデル質量特性誤差がそのまま表出することになります。
