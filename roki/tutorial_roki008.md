@@ -22,7 +22,7 @@ Copyright (C) Tomomichi Sugihara (Zhidao)
 
 # 参照軌道の作成
 
-星型の軌道は、$y$-$z$平面上に5つの点を配置し、それらを直線的につないでいくことで描きます。
+星型の軌道は、$`y`$-$`z`$平面上に5つの点を配置し、それらを直線的につないでいくことで描きます。
 ある点を中心にした半径一定の円周上に、360*2/5°間隔で点をとっていきます。
 それらを順番に辿り、最後まで行ってからまた最初の点まで戻れば五芒星の完成です。
 このような点列は、例えば次のように求めることができるでしょう。
@@ -45,7 +45,7 @@ bool create_viapoints(zVec3DArray *viapoints)
   return true;
 }
 ```
-横着して、中心点の座標$(0.3, 0.05, 0.3)$および半径$0.1$は関数の中に書き込んでしまっています。
+横着して、中心点の座標(0.3, 0.05, 0.3)および半径0.1は関数の中に書き込んでしまっています。
 これらを引数で与えるように改造するのも良いかも知れません。
 5つの点は、引数の`zVec3DArray`型変数に保存します。
 これはZeoで定義されている`zVec3D`型配列で、個々の要素のアドレスを`zArrayElemNC()`で参照することが出来ます。
@@ -85,7 +85,7 @@ zVec3D *get_ref_point(zVec3DArray *viapoints, double t, double term, zVec3D *ref
 
 この例だと`zPexIP`の境界条件は常に同じなので、`pc`を関数外で作成・保持しておけばそれを使い回せるのですが、大した計算でも無いので、毎回この関数中で生成/破棄しています。
 
-`pc`の初期値・終端値は1〜0ではなく、始点・終点の座標値を直接指定するのでも構わないのですが、それだと$x$、$y$、$z$それぞれの成分について別々に、合計3つの`zPexIP`インスタンスを作る必要があります。
+`pc`の初期値・終端値は1〜0ではなく、始点・終点の座標値を直接指定するのでも構わないのですが、それだと$`x`$、$`y`$、$`z`$それぞれの成分について別々に、合計3つの`zPexIP`インスタンスを作る必要があります。
 今回のように直線的につなぐ場合は、`zVec3DInterDiv()`を使う方が簡単でしょう。
 
 
@@ -255,49 +255,46 @@ zVec track_ctrlr_trq(track_ctrlr_t *ctrlr, double t, double dt, zVec acc)
   return ctrlr->trq;
 }
 ```
-第2引数は時刻$t$です。
+第2引数は時刻$`t`$です。
 第3引数は、参照値の微分値を近似的に計算するために使う離散値列の時間幅です。
 制御周期と読み替えても構いません。
 第4引数は、順動力学内での関節加速度計算に必要となるメモリ領域を計算トルク法の途中計算用に使い回す意図で与えています。
 
 中身に入ります。
-まずは時刻$t$における手先位置参照値`ref_point`を、先程定義した関数`get_ref_point()`により計算して、手先位置拘束用IKセルにセットします。
+まずは時刻$`t`$における手先位置参照値`ref_point`を、先程定義した関数`get_ref_point()`により計算して、手先位置拘束用IKセルにセットします。
 手先姿勢の参照値は変えませんので、`rkIKCellEnable()`を使ってIKセルを有効化するだけにします。
 この条件下で逆運動学を解き、結果を`ctrlr`のメンバ変数`dis_ref`に格納します。
 
 関節トルク`trq`は、次式に基づいて決めます。
-
-$$
+```math
 \boldsymbol{\tau}=\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}}^{*})
 \\
 \ddot{\boldsymbol{q}}^{*}={}^{\mathrm{d}}\ddot{\boldsymbol{q}}+2\zeta\omega_{n}({}^{\mathrm{d}}\dot{\boldsymbol{q}}-\dot{\boldsymbol{q}})+\omega_{n}^{2}({}^{\mathrm{d}}\boldsymbol{q}-\boldsymbol{q})
-$$
-
-ただし、$\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}})$は関節変位$\boldsymbol{q}$、関節速度$\dot{\boldsymbol{q}}$、関節加速度$\ddot{\boldsymbol{q}}$に基づいて逆動力学により計算される関節駆動トルクです。
-また、${}^{\mathrm{d}}\boldsymbol{q}$は関節変位の参照値で、これの導関数は今回の例では陽に求めることも可能ではあるのですが、簡易的に次式のように離散近似することにします。
-
-$$
+```
+ただし、$`\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}})`$は関節変位$`\boldsymbol{q}`$、関節速度$`\dot{\boldsymbol{q}}`$、関節加速度$`\ddot{\boldsymbol{q}}`$に基づいて逆動力学により計算される関節駆動トルクです。
+また、$`{}^{\mathrm{d}}\boldsymbol{q}`$は関節変位の参照値で、これの導関数は今回の例では陽に求めることも可能ではあるのですが、簡易的に次式のように離散近似することにします。
+```math
 {}^{\mathrn{d}}\dot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-{}^{\mathrn{d}}\boldsymbol{q}_{k-1})/\varDelta t
 \\
 {}^{\mathrn{d}}\ddot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-2{}^{\mathrn{d}}\boldsymbol{q}_{k-1}+{}^{\mathrn{d}}\boldsymbol{q}_{k-2})/\varDelta t^{2}
-$$
+```
 
-ただし、${}^{\mathrn{d}}\boldsymbol{q}_{k}$は現在のサイクルにおける参照値、${}^{\mathrn{d}}\boldsymbol{q}_{k-1})$は1サイクル前の参照値、${}^{\mathrn{d}}\boldsymbol{q}_{k-2})$は2サイクル前の参照値、$\varDelta t$は制御サイクルです。
+ただし、$`{}^{\mathrn{d}}\boldsymbol{q}_{k}`$は現在のサイクルにおける参照値、$`{}^{\mathrn{d}}\boldsymbol{q}_{k-1})`$は1サイクル前の参照値、$`{}^{\mathrn{d}}\boldsymbol{q}_{k-2})`$は2サイクル前の参照値、$`\varDelta t`$は制御周期です。
 
 上記において、各変数と`ctrlr`のメンバ変数とは
 
- - $\boldsymbol{\tau}$ : `trq`
- - $\boldsymbol{q}$ : `dis_obs`
- - $\dot{\boldsymbol{q}}$ : `vel_obs`
- - ${}^{\mathrm{d}}\boldsymbol{q}={}^{\mathrm{d}}\boldsymbol{q}_{k}$ : `dis_ref`
- - ${}^{\mathrm{d}}\boldsymbol{q}_{k-1}$ : `dis_ref_1`
- - ${}^{\mathrm{d}}\boldsymbol{q}_{k-2}$ : `dis_ref_2`
- - $\zeta$ : `zeta`
- - $\omega_{n}$ : `omega`
+ - $`\boldsymbol{\tau}`$ : `trq`
+ - $`\boldsymbol{q}`$ : `dis_obs`
+ - $`\dot{\boldsymbol{q}}`$ : `vel_obs`
+ - $`{}^{\mathrm{d}}\boldsymbol{q}={}^{\mathrm{d}}\boldsymbol{q}_{k}`$ : `dis_ref`
+ - $`{}^{\mathrm{d}}\boldsymbol{q}_{k-1}`$ : `dis_ref_1`
+ - $`{}^{\mathrm{d}}\boldsymbol{q}_{k-2}`$ : `dis_ref_2`
+ - $`\zeta`$ : `zeta`
+ - $`\omega_{n}`$ : `omega`
 
 のようにそれぞれ対応します。
-また、$\ddot{\boldsymbol{q}}^{*}$の保存に`acc`を用いています。
-$\varDelta t$は引数で与えた`dt`です。
+また、$`\ddot{\boldsymbol{q}}^{*}`$の保存に`acc`を用いています。
+$`\varDelta t`$は引数で与えた`dt`です。
 
 計算後に、`dis_ref_1`を`dis_ref_2`にコピーし、次いで`dis_ref`を`dis_ref_1`にコピーすることで、履歴を更新します。
 
@@ -445,5 +442,5 @@ rk_anim puma.ztk test.zvs -x 4 -y 0.05 -z 0.2
 
 <img width=500 alt="手先追従制御シミュレーション手先軌跡・拡大" src="fig/puma_track_test_endpoint_zoom.svg">
 
-$x$方向を拡大すると、わりと歪んでいることが分かります。
+$`x`$方向を拡大すると、わりと歪んでいることが分かります。
 計算トルク法において、質量特性の誤差がどのように現れるか分かりやすい例になっていると思います。
