@@ -2,8 +2,8 @@ RoKiチュートリアル: ロボットアームの手先軌道追従制御シ�
 ====================================================================================================
 Copyright (C) Tomomichi Sugihara (Zhidao)
 
- - 2025. 1. 3. 作成 Zhidao
- - 2025. 1. 5. 最終更新 Zhidao
+ - 2025.01.03. 作成 Zhidao
+ - 2025.01.05. 最終更新 Zhidao
 
 ----------------------------------------------------------------------------------------------------
 
@@ -266,33 +266,37 @@ zVec track_ctrlr_trq(track_ctrlr_t *ctrlr, double t, double dt, zVec acc)
 この条件下で逆運動学を解き、結果を`ctrlr`のメンバ変数`dis_ref`に格納します。
 
 関節トルク`trq`は、次式に基づいて決めます。
+
 $$
-\bm{\tau}=\bm{\tau}_{\mathrm{ID}}(\bm{q},\dot{\bm{q}},\ddot{\bm{q}}^{*})
+\boldsymbol{\tau}=\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}}^{*})
 \\
-\ddot{\bm{q}}^{*}={}^{\mathrm{d}}\ddot{\bm{q}}+2\zeta\omega_{n}({}^{\mathrm{d}}\dot{\bm{q}}-\dot{\bm{q}})+\omega_{n}^{2}({}^{\mathrm{d}}\bm{q}-\bm{q})
+\ddot{\boldsymbol{q}}^{*}={}^{\mathrm{d}}\ddot{\boldsymbol{q}}+2\zeta\omega_{n}({}^{\mathrm{d}}\dot{\boldsymbol{q}}-\dot{\boldsymbol{q}})+\omega_{n}^{2}({}^{\mathrm{d}}\boldsymbol{q}-\boldsymbol{q})
 $$
-ただし、$\bm{\tau}_{\mathrm{ID}}(\bm{q},\dot{\bm{q}},\ddot{\bm{q}})$は関節変位$\bm{q}$、関節速度$\dot{\bm{q}}$、関節加速度$\ddot{\bm{q}}$に基づいて逆動力学により計算される関節駆動トルクです。
-また、${}^{\mathrm{d}}\bm{q}$は関節変位の参照値で、これの導関数は今回の例では陽に求めることも可能ではあるのですが、簡易的に次式のように離散近似することにします。
+
+ただし、$\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}})$は関節変位$\boldsymbol{q}$、関節速度$\dot{\boldsymbol{q}}$、関節加速度$\ddot{\boldsymbol{q}}$に基づいて逆動力学により計算される関節駆動トルクです。
+また、${}^{\mathrm{d}}\boldsymbol{q}$は関節変位の参照値で、これの導関数は今回の例では陽に求めることも可能ではあるのですが、簡易的に次式のように離散近似することにします。
+
 $$
-{}^{\mathrn{d}}\dot{\bm{q}}\simeq({}^{\mathrn{d}}\bm{q}_{k}-{}^{\mathrn{d}}\bm{q}_{k-1})/\varDelta t
+{}^{\mathrn{d}}\dot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-{}^{\mathrn{d}}\boldsymbol{q}_{k-1})/\varDelta t
 \\
-{}^{\mathrn{d}}\ddot{\bm{q}}\simeq({}^{\mathrn{d}}\bm{q}_{k}-2{}^{\mathrn{d}}\bm{q}_{k-1}+{}^{\mathrn{d}}\bm{q}_{k-2})/\varDelta t^{2}
+{}^{\mathrn{d}}\ddot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-2{}^{\mathrn{d}}\boldsymbol{q}_{k-1}+{}^{\mathrn{d}}\boldsymbol{q}_{k-2})/\varDelta t^{2}
 $$
-ただし、${}^{\mathrn{d}}\bm{q}_{k}$は現在のサイクルにおける参照値、${}^{\mathrn{d}}\bm{q}_{k-1})$は1サイクル前の参照値、${}^{\mathrn{d}}\bm{q}_{k-2})$は2サイクル前の参照値、$\varDelta t$は制御サイクルです。
+
+ただし、${}^{\mathrn{d}}\boldsymbol{q}_{k}$は現在のサイクルにおける参照値、${}^{\mathrn{d}}\boldsymbol{q}_{k-1})$は1サイクル前の参照値、${}^{\mathrn{d}}\boldsymbol{q}_{k-2})$は2サイクル前の参照値、$\varDelta t$は制御サイクルです。
 
 上記において、各変数と`ctrlr`のメンバ変数とは
 
- - $\bm{\tau}$ : `trq`
- - $\bm{q}$ : `dis_obs`
- - $\dot{\bm{q}}$ : `vel_obs`
- - ${}^{\mathrm{d}}\bm{q}={}^{\mathrm{d}}\bm{q}_{k}$ : `dis_ref`
- - ${}^{\mathrm{d}}\bm{q}_{k-1}$ : `dis_ref_1`
- - ${}^{\mathrm{d}}\bm{q}_{k-2}$ : `dis_ref_2`
+ - $\boldsymbol{\tau}$ : `trq`
+ - $\boldsymbol{q}$ : `dis_obs`
+ - $\dot{\boldsymbol{q}}$ : `vel_obs`
+ - ${}^{\mathrm{d}}\boldsymbol{q}={}^{\mathrm{d}}\boldsymbol{q}_{k}$ : `dis_ref`
+ - ${}^{\mathrm{d}}\boldsymbol{q}_{k-1}$ : `dis_ref_1`
+ - ${}^{\mathrm{d}}\boldsymbol{q}_{k-2}$ : `dis_ref_2`
  - $\zeta$ : `zeta`
  - $\omega_{n}$ : `omega`
 
 のようにそれぞれ対応します。
-また、$\ddot{\bm{q}}^{*}$の保存に`acc`を用いています。
+また、$\ddot{\boldsymbol{q}}^{*}$の保存に`acc`を用いています。
 $\varDelta t$は引数で与えた`dt`です。
 
 計算後に、`dis_ref_1`を`dis_ref_2`にコピーし、次いで`dis_ref`を`dis_ref_1`にコピーすることで、履歴を更新します。
