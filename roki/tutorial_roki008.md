@@ -274,12 +274,12 @@ zVec track_ctrlr_trq(track_ctrlr_t *ctrlr, double t, double dt, zVec acc)
 ただし、$`\boldsymbol{\tau}_{\mathrm{ID}}(\boldsymbol{q},\dot{\boldsymbol{q}},\ddot{\boldsymbol{q}})`$は関節変位$`\boldsymbol{q}`$、関節速度$`\dot{\boldsymbol{q}}`$、関節加速度$`\ddot{\boldsymbol{q}}`$に基づいて逆動力学により計算される関節駆動トルクです。
 また、$`{}^{\mathrm{d}}\boldsymbol{q}`$は関節変位の参照値で、これの導関数は今回の例では陽に求めることも可能ではあるのですが、簡易的に次式のように離散近似することにします。
 ```math
-{}^{\mathrn{d}}\dot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-{}^{\mathrn{d}}\boldsymbol{q}_{k-1})/\varDelta t
+{}^{\mathrm{d}}\dot{\boldsymbol{q}}\simeq({}^{\mathrm{d}}\boldsymbol{q}_{k}-{}^{\mathrm{d}}\boldsymbol{q}_{k-1})/\varDelta t
 \\
-{}^{\mathrn{d}}\ddot{\boldsymbol{q}}\simeq({}^{\mathrn{d}}\boldsymbol{q}_{k}-2{}^{\mathrn{d}}\boldsymbol{q}_{k-1}+{}^{\mathrn{d}}\boldsymbol{q}_{k-2})/\varDelta t^{2}
+{}^{\mathrm{d}}\ddot{\boldsymbol{q}}\simeq({}^{\mathrm{d}}\boldsymbol{q}_{k}-2{}^{\mathrm{d}}\boldsymbol{q}_{k-1}+{}^{\mathrm{d}}\boldsymbol{q}_{k-2})/\varDelta t^{2}
 ```
 
-ただし、$`{}^{\mathrn{d}}\boldsymbol{q}_{k}`$は現在のサイクルにおける参照値、$`{}^{\mathrn{d}}\boldsymbol{q}_{k-1})`$は1サイクル前の参照値、$`{}^{\mathrn{d}}\boldsymbol{q}_{k-2})`$は2サイクル前の参照値、$`\varDelta t`$は制御周期です。
+ただし、$`{}^{\mathrm{d}}\boldsymbol{q}_{k}`$は現在のサイクルにおける参照値、$`{}^{\mathrm{d}}\boldsymbol{q}_{k-1}`$は1サイクル前の参照値、$`{}^{\mathrm{d}}\boldsymbol{q}_{k-2}`$は2サイクル前の参照値、$`\varDelta t`$は制御周期です。
 
 上記において、各変数と`ctrlr`のメンバ変数とは
 
